@@ -8,11 +8,13 @@ import java.rmi.RemoteException;
  */
 public class Main {
 
-    public static final String masterIP = "localhost";
+    public static final String masterIP = "10.179.11.232";
 
 
 
     public static void main(String[] args){
+
+        String eigeneIP = args[0];
 
 
         //Bereitstellung von ClientServices
@@ -34,7 +36,7 @@ public class Main {
         try {
 
             MasterRemote masterRemote = (MasterRemote)Naming.lookup("rmi://"+masterIP+"/MasterRemote");
-            masterRemote.register("localhost");
+            masterRemote.register(eigeneIP);
 
         } catch (NotBoundException e) {
             e.printStackTrace();

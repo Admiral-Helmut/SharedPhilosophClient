@@ -15,4 +15,10 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
         return true;
     }
+
+    @Override
+    public boolean setNeighbour(String ip) throws RemoteException {
+        System.out.println("Nachbar Client mit IP "+ip+" hat sich registriert");
+        return true;
+    }
 }
