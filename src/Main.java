@@ -33,7 +33,7 @@ public class Main {
         //Registrierung beim Master
         try {
 
-            MasterRemote masterRemote = (MasterRemote)Naming.lookup("rmi://"+masterIP+"/Connection");
+            MasterRemote masterRemote = (MasterRemote)Naming.lookup("rmi://"+masterIP+"/MasterRemote");
             masterRemote.register("localhost");
 
         } catch (NotBoundException e) {
