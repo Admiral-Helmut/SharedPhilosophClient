@@ -2,28 +2,45 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 
 /**
- * Created by Admiral Helmut on 01.05.2015.
+ * Created by admiralhelmut on 01.05.15.
  */
 public class Main {
 
-    public static final String masterIP = "10.179.11.232";
 
+    public static String masterIP = "127.0.0.1";
+    public static String ownIP = "127.0.0.1";
 
 
     public static void main(String[] args){
 
-        String eigeneIP = args[0];
+
+        System.out.println("Start");
+        if(args.length>1){
+            ownIP = args[0];
+            masterIP = args[1];
+
+        }
 
 
-        //Bereitstellung von ClientServices
+        try{
+
+            LocateRegistry.createRegistry(1099);
+            System.out.println("Start der Registry erfolgreich!");
+
+        }catch(Exception e){
+            System.out.println("Start der Registry fehlgeschlagen!");
+        }
+
+
+
+        ClientServiceImpl clientService = null;
         try {
-            ClientServiceImpl clientService = new ClientServiceImpl();
-            Naming.rebind("ClientRemote", clientService);
-
+            clientService = new ClientServiceImpl();
+            Naming.rebind("//"+ownIP+"/ClientRemote", clientService);
             System.out.println("# Client Remote Service gestartet");
-
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (MalformedURLException e) {
@@ -33,17 +50,29 @@ public class Main {
 
         //Verbindung zu den Servicen des Masters
         //Registrierung beim Master
-        try {
 
-            MasterRemote masterRemote = (MasterRemote)Naming.lookup("rmi://"+masterIP+"/MasterRemote");
-            masterRemote.register(eigeneIP);
+        boolean connectionToServer = false;
+        MasterRemote masterRemote = null;
+        try {
+            masterRemote = (MasterRemote)Naming.lookup("rmi://"+masterIP+"/MasterRemote");
+            connectionToServer = masterRemote.register(ownIP);
 
         } catch (NotBoundException e) {
             e.printStackTrace();
+            connectionToServer = false;
         } catch (MalformedURLException e) {
             e.printStackTrace();
+            connectionToServer = false;
         } catch (RemoteException e) {
             e.printStackTrace();
+            connectionToServer = false;
+        }
+
+        if(connectionToServer){
+            System.out.println("# Verbindung zum Server war erfolgreich!");
+            clientService.setMaster(masterRemote, masterIP);
+        }else{
+            System.out.println("# Verbindung zum Server FEHLGESCHLAGEN!");
         }
 
     }
