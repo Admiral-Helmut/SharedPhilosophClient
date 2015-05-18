@@ -8,4 +8,10 @@ public interface ClientRemote extends Remote {
 
     public boolean checkClient() throws RemoteException;
     public boolean setNeighbour(String ip, String lookupName) throws RemoteException;
+    public void initClient(int seats, int allSeats, int philosopher, int allPhilosopher, int hungryPhilosopher, int allHungryPhilosopher,
+                           int philosopherOffset, int hungryPhilosopherOffset, int eatTime, int meditationTime, int sleepTime,
+                           int runTimeInSeconds, String leftneighbourIP,
+                           String leftneighbourLookupName , String rightneighbourIP,
+                           String rightneighbourLookupName) throws RemoteException;
+
 }

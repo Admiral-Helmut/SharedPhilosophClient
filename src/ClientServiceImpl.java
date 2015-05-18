@@ -16,6 +16,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     MasterRemote master;
     String masterName;
 
+    TablePart tablePart = null;
+
 
     protected ClientServiceImpl() throws RemoteException {
 
@@ -48,6 +50,14 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         printNeighbours();
         return true;
     }
+
+    @Override
+    public void initClient(int seats, int allSeats, int philosopher, int allPhilosopher, int hungryPhilosopher, int allHungryPhilosopher, int philosopherOffset, int hungryPhilosopherOffset, int eatTime, int meditationTime, int sleepTime, int runTimeInSeconds, String leftneighbourIP, String leftneighbourLookupName, String rightneighbourIP, String rightneighbourLookupName) throws RemoteException {
+
+        tablePart = new TablePart();
+
+    }
+
 
     public void setMaster(MasterRemote master, String masterName){
         this.master = master;
