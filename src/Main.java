@@ -10,8 +10,9 @@ import java.rmi.registry.LocateRegistry;
 public class Main {
 
 
-    public static String masterIP = "127.0.0.1";
-    public static String ownIP = "127.0.0.1";
+    public static String masterIP = "192.168.1.3";
+    public static String ownIP = "192.168.1.3";
+    public static String lookupName = "Client1";
 
 
     public static void main(String[] args){
@@ -39,7 +40,7 @@ public class Main {
         ClientServiceImpl clientService = null;
         try {
             clientService = new ClientServiceImpl();
-            Naming.rebind("//"+ownIP+"/ClientRemote", clientService);
+            Naming.rebind("//"+ownIP+"/"+lookupName, clientService);
             System.out.println("# Client Remote Service gestartet");
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -55,7 +56,7 @@ public class Main {
         MasterRemote masterRemote = null;
         try {
             masterRemote = (MasterRemote)Naming.lookup("rmi://"+masterIP+"/MasterRemote");
-            connectionToServer = masterRemote.register(ownIP);
+            connectionToServer = masterRemote.register(ownIP, lookupName);
 
         } catch (NotBoundException e) {
             e.printStackTrace();
@@ -74,6 +75,7 @@ public class Main {
         }else{
             System.out.println("# Verbindung zum Server FEHLGESCHLAGEN!");
         }
+
 
     }
 }
