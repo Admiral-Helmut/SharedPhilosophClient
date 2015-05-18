@@ -28,11 +28,11 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     @Override
-    public boolean setNeighbour(String ip) throws RemoteException {
+    public boolean setNeighbour(String ip, String lookupName) throws RemoteException {
 
         ClientRemote neighbourRemote = null;
         try {
-            neighbourRemote = (ClientRemote) Naming.lookup("rmi://" + ip + "/ClientRemote");
+            neighbourRemote = (ClientRemote) Naming.lookup("rmi://" + ip + "/"+lookupName);
 
         } catch (NotBoundException e) {
             e.printStackTrace();

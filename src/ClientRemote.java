@@ -7,5 +7,5 @@ import java.rmi.RemoteException;
 public interface ClientRemote extends Remote {
 
     public boolean checkClient() throws RemoteException;
-    public boolean setNeighbour(String ip) throws RemoteException;
+    public boolean setNeighbour(String ip, String lookupName) throws RemoteException;
 }
