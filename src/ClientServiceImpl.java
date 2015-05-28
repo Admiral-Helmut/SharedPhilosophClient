@@ -43,7 +43,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         }
 
         if(neighbourRemote!=null){
-            neighbourList.put(ip, neighbourRemote);
+            neighbourList.put(lookupName, neighbourRemote);
         }
 
         printMaster();

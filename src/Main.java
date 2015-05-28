@@ -10,8 +10,8 @@ import java.rmi.registry.LocateRegistry;
 public class Main {
 
 
-    public static String masterIP = "192.168.1.3";
-    public static String ownIP = "192.168.1.3";
+    public static String masterIP = "127.0.0.1";
+    public static String ownIP = "127.0.0.1";
     public static String lookupName = "Client1";
 
 
@@ -26,14 +26,14 @@ public class Main {
         }
 
 
-        try{
-
-            LocateRegistry.createRegistry(1099);
-            System.out.println("Start der Registry erfolgreich!");
-
-        }catch(Exception e){
-            System.out.println("Start der Registry fehlgeschlagen!");
-        }
+//        try{
+//
+//            LocateRegistry.createRegistry(1099);
+//            System.out.println("Start der Registry erfolgreich!");
+//
+//        }catch(Exception e){
+//            System.out.println("Start der Registry fehlgeschlagen!");
+//        }
 
 
 
@@ -56,6 +56,7 @@ public class Main {
         MasterRemote masterRemote = null;
         try {
             masterRemote = (MasterRemote)Naming.lookup("rmi://"+masterIP+"/MasterRemote");
+            System.out.println("# Master Remote empfangen!");
             connectionToServer = masterRemote.register(ownIP, lookupName);
 
         } catch (NotBoundException e) {
