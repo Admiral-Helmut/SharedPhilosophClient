@@ -52,9 +52,37 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     @Override
-    public void initClient(int seats, int allSeats, int philosopher, int allPhilosopher, int hungryPhilosopher, int allHungryPhilosopher, int philosopherOffset, int hungryPhilosopherOffset, int eatTime, int meditationTime, int sleepTime, int runTimeInSeconds, String leftneighbourIP, String leftneighbourLookupName, String rightneighbourIP, String rightneighbourLookupName) throws RemoteException {
+    public void initClient(int seats, int allSeats, int philosopher, int allPhilosopher, int hungryPhilosopher, int allHungryPhilosopher, int philosopherOffset, int hungryPhilosopherOffset, int eatTime, int meditationTime, int sleepTime, int runTimeInSeconds, String leftneighbourIP, String leftneighbourLookupName, String rightneighbourIP, String rightneighbourLookupName, boolean debugging) throws RemoteException {
 
-        tablePart = new TablePart();
+        ClientRemote leftClient = null;
+        ClientRemote rightClient = null;
+        try {
+            leftClient = (ClientRemote)Naming.lookup("rmi://"+leftneighbourIP+"/"+leftneighbourLookupName);
+            rightClient = (ClientRemote)Naming.lookup("rmi://"+rightneighbourIP+"/"+rightneighbourLookupName);
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        new RestoreClient(allSeats, allPhilosopher, allHungryPhilosopher, eatTime, meditationTime, sleepTime, runTimeInSeconds, leftneighbourIP, leftneighbourLookupName, rightneighbourIP, rightneighbourLookupName, leftClient, rightClient, debugging);
+        tablePart = new TablePart(seats);
+
+        for(int i =0; i < RestoreClient.getAllPhilosopher(); i++){
+            boolean b = (i+1)>=philosopherOffset&&(i+1)<philosopherOffset+philosopher;
+
+            Philosopher p = new Philosopher((i+1),false, b);
+            p.start();
+
+        }
+
+        for(int i =0; i < RestoreClient.getAllHungryPhilosopher(); i++){
+            boolean b = (i+1)>=hungryPhilosopherOffset&&(i+1)<hungryPhilosopherOffset+hungryPhilosopher;
+
+            Philosopher p = new Philosopher((i+1+RestoreClient.getAllPhilosopher()),true, b);
+            p.start();
+        }
+
 
     }
 

@@ -12,6 +12,6 @@ public interface ClientRemote extends Remote {
                            int philosopherOffset, int hungryPhilosopherOffset, int eatTime, int meditationTime, int sleepTime,
                            int runTimeInSeconds, String leftneighbourIP,
                            String leftneighbourLookupName , String rightneighbourIP,
-                           String rightneighbourLookupName) throws RemoteException;
+                           String rightneighbourLookupName, boolean debugging) throws RemoteException;
 
 }
