@@ -1,4 +1,5 @@
 /**
+ * VSS
  * Created by Admiral Helmut on 20.05.2015.
  */
 public class RestoreClient {
@@ -86,5 +87,17 @@ public class RestoreClient {
 
     public static String getRightneighbourLookupName() {
         return rightneighbourLookupName;
+    }
+
+    public static boolean isDebugging() {
+        return debugging;
+    }
+
+    public static ClientRemote getLeftClient() {
+        return leftClient;
+    }
+
+    public static ClientRemote getRightClient() {
+        return rightClient;
     }
 }

@@ -1,4 +1,7 @@
+import java.rmi.RemoteException;
+
 /**
+ * VSS
  * Created by Admiral Helmut on 20.05.2015.
  */
 public class Philosopher extends Thread {
@@ -6,8 +9,11 @@ public class Philosopher extends Thread {
     private boolean hungry;
     private int id;
     private boolean active;
-    private Object monitor = new Object();
+    private final Object monitor = new Object();
     private Status status;
+    private boolean punished;
+    private Seat seat;
+    private int mealsEaten;
 
     public Philosopher(int id, boolean hungry, boolean active){
 
@@ -30,14 +36,22 @@ public class Philosopher extends Thread {
                 }
             }
             while(active){
-
                 switch(status){
-
                     case MEDITATING:
+                        doMeditating();
+                        status = Status.EATING;
                         break;
                     case EATING:
+                        if(seat == null) {
+                            active = tryToEat();
+                        }
+                        else{
+                            startEating();
+                        }
                         break;
                     case SLEEPING:
+                        doSleeping();
+                        status = Status.MEDITATING;
                         break;
 
                 }
@@ -50,4 +64,162 @@ public class Philosopher extends Thread {
 
     }
 
+    private boolean tryToEat() {
+        if(isPunished()) {
+            status = Status.MEDITATING;
+            setPunished(false);
+            return true;
+        }else {
+            SeatProposal seatProposal = searchSeat();
+            if(seatProposal.getName().equals(Main.lookupName)) {
+                takeSeatWhenAvailable(TablePart.getTablePart().getSeat(seatProposal.getSeatNumber()));
+                startEating();
+                return true;
+            }
+            else{
+                ClientServiceImpl.awakePhilosopherAddToQueueCall(id, seatProposal.getSeatNumber(), seatProposal.getName());
+                return false;
+            }
+        }
+    }
+    private void startEating(){
+
+        boolean readyToEat = false;
+        while (!readyToEat) {
+            if(RestoreClient.isDebugging()) {
+                System.out.println("Philosopher " + id + " tries to get left fork.");
+            }
+            while (!seat.takeLeftForkIfAvailable()) {
+                try {
+                    if(seat.getLeftFork() == null) {
+                        synchronized (ClientServiceImpl.getLeftForkMonitor()) {
+                            ClientServiceImpl.getLeftForkMonitor().wait();
+                        }
+                    }
+                    else {
+                        synchronized (seat.getLeftFork().getMonitor()){
+                            seat.getLeftFork().getMonitor().wait();
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(RestoreClient.isDebugging()) {
+                System.out.println("Philosopher " + id + " got left fork and tries to get right fork.");
+            }
+            if (!seat.takeRightForkIfAvailable()) {
+                seat.releaseLeftFork();
+
+                // Fix problem of all philosopher starting to eat at same time
+                if (Math.random() > 0.9) {
+                    try {
+                        sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(RestoreClient.isDebugging()) {
+                    System.out.println("Right Fork was not available, Philosopher " + id + " released left fork.");
+                }
+            } else {
+                readyToEat = true;
+            }
+        }
+
+        if(RestoreClient.isDebugging()) {
+            System.out.println("Philosopher " + id + " starts to eat.");
+        }
+        try {
+            sleep(RestoreClient.getEatTime());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        mealsEaten++;
+        ClientServiceImpl.updatePhilosopherForAllClientsCall(id, mealsEaten);
+        seat.removePhilosopher();
+        seat = null;
+        if(RestoreClient.isDebugging()) {
+            System.out.println("Philosopher " + id + " finished his " + mealsEaten + ". meal.");
+        }
+    }
+
+    private SeatProposal searchSeat() {
+        try {
+            SeatProposal currentBestSeatProposal = RestoreClient.getLeftClient().searchSeat(Main.lookupName);
+            SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
+
+            if(currentBestSeatProposal.compareTo(ownSeatProposal) > 0) {
+                return currentBestSeatProposal;
+            }
+            return ownSeatProposal;
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return new SeatProposal(-1, -1, "", "");
+    }
+
+    private void takeSeatWhenAvailable(Seat seat) {
+        this.seat = seat.getSeatWithSmallesQueue(this);
+        if(this.seat == null) {
+            try {
+                synchronized (monitor) {
+                    monitor.wait();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    private void doMeditating(){
+        if(RestoreClient.isDebugging()) {
+            System.out.println("Philosopher " + id + " starts meditating.");
+        }
+        try {
+            sleep(hungry ? RestoreClient.getMeditationTime()/2 : RestoreClient.getMeditationTime());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void doSleeping(){
+        if(RestoreClient.isDebugging()) {
+            System.out.println("Philosopher " + id + " starts sleeping.");
+        }
+        try {
+            sleep(RestoreClient.getSleepTime());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public boolean isPunished() {
+        return punished;
+    }
+
+    public void setPunished(boolean punished) {
+        this.punished = punished;
+    }
+
+    public void setSeat(Seat seat) { this.seat = seat; }
+
+    public Object getMonitor() {
+        return monitor;
+    }
+
+    public void setMealsEaten(int mealsEaten) {
+        this.mealsEaten = mealsEaten;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 }
