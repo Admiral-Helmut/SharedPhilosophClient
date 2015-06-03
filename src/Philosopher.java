@@ -136,7 +136,11 @@ public class Philosopher extends Thread {
             e.printStackTrace();
         }
         mealsEaten++;
-        ClientServiceImpl.updatePhilosopherForAllClientsCall(id, mealsEaten);
+        new Thread(){
+            public void run() {
+                ClientServiceImpl.updatePhilosopherForAllClientsCall(id, mealsEaten);
+            }
+        }.start();
         seat.removePhilosopher();
         seat = null;
         if(RestoreClient.isDebugging()) {
