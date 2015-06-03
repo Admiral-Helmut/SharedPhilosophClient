@@ -98,7 +98,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         }
         SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
 
-        if(currentBestSeatProposal.compareTo(ownSeatProposal) > 0) {
+        if(currentBestSeatProposal != null && currentBestSeatProposal.compareTo(ownSeatProposal) > 0) {
             return currentBestSeatProposal;
         }
         return ownSeatProposal;
