@@ -84,7 +84,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             philosophers.add(p);
             p.start();
         }
-
+        new Overseer().start();
 
     }
 

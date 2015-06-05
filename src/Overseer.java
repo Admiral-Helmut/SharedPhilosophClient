@@ -11,7 +11,7 @@ public class Overseer extends Thread {
     public void run() {
         endTime = RestoreClient.getEndTime();
         new PhilosoperUpdater().start();
-        //new Punisher().start();
+        new Punisher().start();
 
         while(System.currentTimeMillis() < endTime) {
             //TODO: Overseer stuff
@@ -40,6 +40,12 @@ public class Overseer extends Thread {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                if(RestoreClient.isDebugging()) {
+                    System.out.println("Punisher starts punishing");
+                }
+
+
                 List<Integer> averageList = ClientServiceImpl.updateAverageCall(Main.lookupName);
 
                 long ownSum = 0;
