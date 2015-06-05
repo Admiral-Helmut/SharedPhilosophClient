@@ -121,11 +121,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         Seat seat = tablePart.getSeat(seatNumber);
         philosopher.setMealsEaten(mealsEaten);
         philosopher.setActive(true);
-        seat.getSeatWithSmallesQueue(philosopher);
         philosopher.setStatus(Status.EATING);
-        philosopher.setJustChangedTable(true);
-        //philosopher.setSeat(tablePart.getSeat(seatNumber));
-        //philosopher.setStatus(Status.EATING);
+        philosopher.setNewSeat(seat);
 
         synchronized (philosopher.getMonitor()){
             philosopher.getMonitor().notifyAll();

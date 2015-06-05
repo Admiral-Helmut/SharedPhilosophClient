@@ -13,9 +13,9 @@ public class Philosopher extends Thread {
     private Status status;
     private boolean punished;
     private Seat seat;
+    private Seat newSeat;
     private int mealsEaten;
     private long endTime;
-    private boolean justChangedTable;
 
     public Philosopher(int id, boolean hungry, boolean active){
 
@@ -44,9 +44,10 @@ public class Philosopher extends Thread {
                         status = Status.EATING;
                         break;
                     case EATING:
-                        if(justChangedTable) {
+                        if(newSeat != null) {
+                            takeSeatWhenAvailable(newSeat);
                             startEating();
-                            justChangedTable = false;
+                            newSeat = null;
                         }
                         else{
                             active = tryToEat();
@@ -250,7 +251,7 @@ public class Philosopher extends Thread {
         return id;
     }
 
-    public void setJustChangedTable(boolean justChangedTable) {
-        this.justChangedTable = justChangedTable;
+    public void setNewSeat(Seat newSeat) {
+        this.newSeat = newSeat;
     }
 }
