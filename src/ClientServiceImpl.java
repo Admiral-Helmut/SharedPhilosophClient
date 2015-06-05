@@ -4,6 +4,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * VSS
@@ -15,7 +16,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     private static HashMap<String, ClientRemote> neighbourList;
     MasterRemote master;
     String masterName;
-    private List<Philosopher> philosophers;
+    private CopyOnWriteArrayList<Philosopher> philosophers;
 
     TablePart tablePart = null;
     protected ClientServiceImpl() throws RemoteException {
@@ -62,7 +63,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        philosophers = new ArrayList<>(allPhilosopher+allHungryPhilosopher);
+        philosophers = new CopyOnWriteArrayList<>();
 
         new RestoreClient(allSeats, allPhilosopher, allHungryPhilosopher, eatTime, meditationTime, sleepTime, runTimeInSeconds, leftneighbourIP, leftneighbourLookupName, rightneighbourIP, rightneighbourLookupName, leftClient, rightClient, debugging);
         tablePart = new TablePart(seats);

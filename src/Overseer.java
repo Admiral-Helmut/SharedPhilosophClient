@@ -11,7 +11,7 @@ public class Overseer extends Thread {
     public void run() {
         endTime = RestoreClient.getEndTime();
         new PhilosoperUpdater().start();
-        new Punisher().start();
+        //new Punisher().start();
 
         while(System.currentTimeMillis() < endTime) {
             //TODO: Overseer stuff

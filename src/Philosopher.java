@@ -11,7 +11,7 @@ public class Philosopher extends Thread {
     private boolean active;
     private final Object monitor = new Object();
     private Status status;
-    private boolean punished;
+    private boolean punished = false;
     private Seat seat;
     private Seat newSeat;
     private int mealsEaten;
