@@ -153,6 +153,28 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         }
     }
 
+    @Override
+    public List<Integer> updateAverage(String lookupName) throws RemoteException {
+        List<Integer> averages = new ArrayList<>();
+
+        long sum = 0;
+        int count = 0;
+        for (Philosopher philosopher : philosophers) {
+            if(philosopher.isActive()) {
+                sum += philosopher.getMealsEaten();
+                count ++;
+            }
+        }
+        if(count > 0) {
+            averages.add((int)(sum / count));
+        }
+
+        if(!lookupName.equals(RestoreClient.getRightneighbourLookupName())){
+            averages.addAll(RestoreClient.getRightClient().updateAverage(lookupName));
+        }
+        return averages;
+    }
+
     public void setMaster(MasterRemote master, String masterName){
         this.master = master;
         this.masterName = masterName;
@@ -223,6 +245,15 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             e.printStackTrace();
         }
 
+    }
+
+    public static List<Integer> updateAverageCall(String lookupName) {
+        try {
+            return RestoreClient.getRightClient().updateAverage(lookupName);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
 

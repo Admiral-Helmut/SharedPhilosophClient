@@ -1,6 +1,7 @@
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * VSS
@@ -27,4 +28,6 @@ public interface ClientRemote extends Remote {
     void lastForkWait() throws RemoteException;
 
     void releaseLastFork() throws RemoteException;
+
+    List<Integer> updateAverage(String lookupName) throws RemoteException;
 }
