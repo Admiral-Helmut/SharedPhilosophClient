@@ -11,8 +11,8 @@ public class Main {
 
 
     public static String masterIP = "192.168.178.3";
-    public static String ownIP = "192.168.178.1";
-    public static String lookupName = "Client1";
+    public static String ownIP = "192.168.178.2";
+    public static String lookupName = "Client2";
 
 
     public static void main(String[] args){
@@ -22,6 +22,7 @@ public class Main {
         if(args.length>1){
             ownIP = args[0];
             masterIP = args[1];
+
         }
 
 
@@ -53,6 +54,7 @@ public class Main {
 
         boolean connectionToServer = false;
         MasterRemote masterRemote = null;
+
         try {
             masterRemote = (MasterRemote)Naming.lookup("rmi://"+masterIP+"/MasterRemote");
             System.out.println("# Master Remote empfangen!");

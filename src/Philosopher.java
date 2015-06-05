@@ -1,3 +1,6 @@
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 /**
@@ -16,13 +19,24 @@ public class Philosopher extends Thread {
     private Seat newSeat;
     private int mealsEaten;
     private long endTime;
+    private ClientRemote leftClient;
+    private ClientRemote rightClient;
 
-    public Philosopher(int ident, boolean hungry, boolean active){
+    public Philosopher(int ident, boolean hungry, boolean active, String leftNeighbourIP, String leftNeighbourLookup){
 
         this.ident = ident;
         this.hungry = hungry;
         this.active = active;
         this.status = Status.MEDITATING;
+        try {
+            leftClient= (ClientRemote) Naming.lookup("rmi://" + leftNeighbourIP + "/" + leftNeighbourLookup);
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     public void run(){
@@ -161,7 +175,7 @@ public class Philosopher extends Thread {
             System.out.println("Philosopher " + ident + " tries to find seat.");
         }
         try {
-            SeatProposal currentBestSeatProposal = RestoreClient.getLeftClient().searchSeat(Main.lookupName);
+            SeatProposal currentBestSeatProposal = leftClient.searchSeat(Main.lookupName);
             SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
 
             if(currentBestSeatProposal.isBetterThen(ownSeatProposal)) {

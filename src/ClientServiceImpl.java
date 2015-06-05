@@ -72,14 +72,14 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         for(int i =0; i < RestoreClient.getAllPhilosopher(); i++){
             boolean b = (i+1)>=philosopherOffset&&(i+1)<philosopherOffset+philosopher;
 
-            Philosopher p = new Philosopher((i+1),false, b);
+            Philosopher p = new Philosopher((i+1),false, b, leftneighbourIP, leftneighbourLookupName);
             philosophers.put(i, p);
         }
 
         for(int i =0; i < RestoreClient.getAllHungryPhilosopher(); i++){
             boolean b = (i+1)>=hungryPhilosopherOffset&&(i+1)<hungryPhilosopherOffset+hungryPhilosopher;
 
-            Philosopher p = new Philosopher((i+1+RestoreClient.getAllPhilosopher()),true, b);
+            Philosopher p = new Philosopher((i+1+RestoreClient.getAllPhilosopher()),true, b, leftneighbourIP, leftneighbourLookupName);
             philosophers.put(i + RestoreClient.getAllPhilosopher(), p);
         }
         Overseer overseer = new Overseer(philosophers);
