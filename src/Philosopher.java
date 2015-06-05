@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 public class Philosopher extends Thread {
 
     private boolean hungry;
-    private int id;
+    private int ident;
     private boolean active;
     private final Object monitor = new Object();
     private Status status;
@@ -17,9 +17,9 @@ public class Philosopher extends Thread {
     private int mealsEaten;
     private long endTime;
 
-    public Philosopher(int id, boolean hungry, boolean active){
+    public Philosopher(int ident, boolean hungry, boolean active){
 
-        this.id = id;
+        this.ident = ident;
         this.hungry = hungry;
         this.active = active;
         this.status = Status.MEDITATING;
@@ -86,7 +86,7 @@ public class Philosopher extends Thread {
                 return true;
             }
             else{
-                ClientServiceImpl.awakePhilosopherAddToQueueCall(id, seatProposal.getSeatNumber(), seatProposal.getName(), mealsEaten);
+                ClientServiceImpl.awakePhilosopherAddToQueueCall(ident, seatProposal.getSeatNumber(), seatProposal.getName(), mealsEaten);
                 return false;
             }
         }
@@ -96,7 +96,7 @@ public class Philosopher extends Thread {
         boolean readyToEat = false;
         while (!readyToEat) {
             if(RestoreClient.isDebugging()) {
-                System.out.println("Philosopher " + id + " tries to get left fork.");
+                System.out.println("Philosopher " + ident + " tries to get left fork.");
             }
             while (!seat.takeLeftForkIfAvailable()) {
                 try {
@@ -113,7 +113,7 @@ public class Philosopher extends Thread {
                 }
             }
             if(RestoreClient.isDebugging()) {
-                System.out.println("Philosopher " + id + " got left fork and tries to get right fork.");
+                System.out.println("Philosopher " + ident + " got left fork and tries to get right fork.");
             }
             if (!seat.takeRightForkIfAvailable()) {
                 seat.releaseLeftFork();
@@ -127,7 +127,7 @@ public class Philosopher extends Thread {
                     }
                 }
                 if(RestoreClient.isDebugging()) {
-                    System.out.println("Right Fork was not available, Philosopher " + id + " released left fork.");
+                    System.out.println("Right Fork was not available, Philosopher " + ident + " released left fork.");
                 }
             } else {
                 readyToEat = true;
@@ -135,7 +135,7 @@ public class Philosopher extends Thread {
         }
 
         if(RestoreClient.isDebugging()) {
-            System.out.println("Philosopher " + id + " starts to eat.");
+            System.out.println("Philosopher " + ident + " starts to eat.");
         }
         try {
             sleep(RestoreClient.getEatTime());
@@ -152,13 +152,13 @@ public class Philosopher extends Thread {
             status = Status.MEDITATING;
         }
         if(RestoreClient.isDebugging()) {
-            System.out.println("Philosopher " + id + " finished his " + mealsEaten + ". meal.");
+            System.out.println("Philosopher " + ident + " finished his " + mealsEaten + ". meal.");
         }
     }
 
     private SeatProposal searchSeat() {
         if(RestoreClient.isDebugging()) {
-            System.out.println("Philosopher " + id + " tries to find seat.");
+            System.out.println("Philosopher " + ident + " tries to find seat.");
         }
         try {
             SeatProposal currentBestSeatProposal = RestoreClient.getLeftClient().searchSeat(Main.lookupName);
@@ -166,12 +166,12 @@ public class Philosopher extends Thread {
 
             if(currentBestSeatProposal.isBetterThen(ownSeatProposal)) {
                 if(RestoreClient.isDebugging()) {
-                    System.out.println("Philosopher " + id + " found seat on other table, it was better: "+currentBestSeatProposal.getWaitingPhilosophersCount()+"-"+ownSeatProposal.getWaitingPhilosophersCount());
+                    System.out.println("Philosopher " + ident + " found seat on other table, it was better: "+currentBestSeatProposal.getWaitingPhilosophersCount()+"-"+ownSeatProposal.getWaitingPhilosophersCount());
                 }
                 return currentBestSeatProposal;
             }
             if(RestoreClient.isDebugging()) {
-                System.out.println("Philosopher " + id + " found seat on own table.");
+                System.out.println("Philosopher " + ident + " found seat on own table.");
             }
             return ownSeatProposal;
 
@@ -198,7 +198,7 @@ public class Philosopher extends Thread {
 
     private void doMeditating(){
         if(RestoreClient.isDebugging()) {
-            System.out.println("Philosopher " + id + " starts meditating.");
+            System.out.println("Philosopher " + ident + " starts meditating.");
         }
         try {
             sleep(hungry ? RestoreClient.getMeditationTime()/2 : RestoreClient.getMeditationTime());
@@ -209,7 +209,7 @@ public class Philosopher extends Thread {
 
     private void doSleeping(){
         if(RestoreClient.isDebugging()) {
-            System.out.println("Philosopher " + id + " starts sleeping.");
+            System.out.println("Philosopher " + ident + " starts sleeping.");
         }
         try {
             sleep(RestoreClient.getSleepTime());
@@ -254,7 +254,7 @@ public class Philosopher extends Thread {
     }
 
     public int getIdent() {
-        return id;
+        return ident;
     }
 
     public void setNewSeat(Seat newSeat) {

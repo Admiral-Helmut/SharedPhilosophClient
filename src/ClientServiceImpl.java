@@ -68,7 +68,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
         new RestoreClient(allSeats, allPhilosopher, allHungryPhilosopher, eatTime, meditationTime, sleepTime, runTimeInSeconds, leftneighbourIP, leftneighbourLookupName, rightneighbourIP, rightneighbourLookupName, leftClient, rightClient, debugging);
         tablePart = new TablePart(seats);
-
+        System.out.println((RestoreClient.getLeftClient() == null)+":" + (RestoreClient.getRightClient() == null));
         for(int i =0; i < RestoreClient.getAllPhilosopher(); i++){
             boolean b = (i+1)>=philosopherOffset&&(i+1)<philosopherOffset+philosopher;
 
@@ -125,6 +125,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     @Override
     public void awakePhilosopherAddToQueue(int philosopherId, int seatNumber, int mealsEaten) throws RemoteException {
+        System.out.println(philosophers.size() + ":::" + philosopherId);
         if(RestoreClient.isDebugging()) {
             System.out.println("Philosopher " + philosopherId + " activated with eat count " + mealsEaten + ".");
         }
