@@ -125,7 +125,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     @Override
     public void awakePhilosopherAddToQueue(int philosopherId, int seatNumber, int mealsEaten) throws RemoteException {
-        System.out.println(philosophers.size() + ":::" + philosopherId);
+        //System.out.println(philosophers.size() + ":::" + philosopherId);
         if(RestoreClient.isDebugging()) {
             System.out.println("Philosopher " + philosopherId + " activated with eat count " + mealsEaten + ".");
         }

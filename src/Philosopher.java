@@ -63,7 +63,7 @@ public class Philosopher extends Thread {
 
         }
 
-        System.out.println("Philosopher finished with " + mealsEaten + " meals Eaten.");
+        System.out.println("Philosopher finished with " + mealsEaten + " meals Eaten he was " + ((active) ? "activ" : "inaktiv") + ".");
 
 
     }
