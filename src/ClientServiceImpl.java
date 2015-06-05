@@ -17,7 +17,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     private static HashMap<String, ClientRemote> neighbourList;
     MasterRemote master;
     String masterName;
-    private CopyOnWriteArrayList<Philosopher> philosophers = new CopyOnWriteArrayList<>();
+    private List<Philosopher> philosophers = new ArrayList<>();
 
     TablePart tablePart = null;
     protected ClientServiceImpl() throws RemoteException {
@@ -90,7 +90,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
                 e.printStackTrace();
             }
         }
-
+        System.out.println(philosophers.size()+"asd");
         for(Philosopher phil : philosophers) {
             phil.start();
         }
@@ -210,7 +210,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         System.out.println("Master: "+masterName);
     }
 
-    public static void updatePhilosophersForNeighborCall(CopyOnWriteArrayList<Philosopher> philosophers){
+    public static void updatePhilosophersForNeighborCall(List<Philosopher> philosophers){
         ClientRemote rightNeighbor = RestoreClient.getRightClient();
         HashMap<Integer, Integer> philosophersUpdate = new HashMap<>();
         for(Philosopher philosopher : philosophers) {
