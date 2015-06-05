@@ -51,7 +51,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     @Override
-    public void initClient(int seats, int allSeats, int philosopher, int allPhilosopher, int hungryPhilosopher, int allHungryPhilosopher, int philosopherOffset, int hungryPhilosopherOffset, int eatTime, int meditationTime, int sleepTime, int runTimeInSeconds, String leftneighbourIP, String leftneighbourLookupName, String rightneighbourIP, String rightneighbourLookupName, boolean debugging) throws RemoteException {
+    public void initClient(int seats, int allSeats, int philosopher, int allPhilosopher, int hungryPhilosopher, int allHungryPhilosopher, int philosopherOffset, int hungryPhilosopherOffset, int eatTime, int meditationTime, int sleepTime, int runTimeInSeconds, String leftneighbourIP, String leftneighbourLookupName, String rightneighbourIP, String rightneighbourLookupName, boolean debugging, long startTime) throws RemoteException {
 
         ClientRemote leftClient = null;
         ClientRemote rightClient = null;
@@ -73,8 +73,6 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
             Philosopher p = new Philosopher((i+1),false, b);
             philosophers.add(p);
-            p.start();
-
         }
 
         for(int i =0; i < RestoreClient.getAllHungryPhilosopher(); i++){
@@ -82,10 +80,21 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
             Philosopher p = new Philosopher((i+1+RestoreClient.getAllPhilosopher()),true, b);
             philosophers.add(p);
-            p.start();
         }
-        new Overseer(philosophers).start();
+        Overseer overseer = new Overseer(philosophers);
 
+        while (System.currentTimeMillis() < startTime ) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for(Philosopher phil : philosophers) {
+            phil.start();
+        }
+        overseer.start();
     }
 
     public SeatProposal searchSeat(String startingClientName) throws RemoteException {
