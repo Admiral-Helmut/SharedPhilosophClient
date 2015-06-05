@@ -14,6 +14,7 @@ public class Philosopher extends Thread {
     private boolean punished;
     private Seat seat;
     private int mealsEaten;
+    private long endTime;
 
     public Philosopher(int id, boolean hungry, boolean active){
 
@@ -24,8 +25,8 @@ public class Philosopher extends Thread {
     }
 
     public void run(){
-
-        while(System.currentTimeMillis()<=RestoreClient.getEndTime()){
+        endTime = RestoreClient.getEndTime();
+        while(System.currentTimeMillis()<=endTime){
             if(!active) {
                 synchronized (monitor) {
                     try {
@@ -77,7 +78,7 @@ public class Philosopher extends Thread {
                 return true;
             }
             else{
-                ClientServiceImpl.awakePhilosopherAddToQueueCall(id, seatProposal.getSeatNumber(), seatProposal.getName());
+                ClientServiceImpl.awakePhilosopherAddToQueueCall(id, seatProposal.getSeatNumber(), seatProposal.getName(), mealsEaten);
                 return false;
             }
         }
@@ -92,9 +93,7 @@ public class Philosopher extends Thread {
             while (!seat.takeLeftForkIfAvailable()) {
                 try {
                     if(seat.getLeftFork() == null) {
-                        synchronized (ClientServiceImpl.getLeftForkMonitor()) {
-                            ClientServiceImpl.getLeftForkMonitor().wait();
-                        }
+                        ClientServiceImpl.leftForkWaitCall();
                     }
                     else {
                         synchronized (seat.getLeftFork().getMonitor()){
@@ -136,11 +135,6 @@ public class Philosopher extends Thread {
             e.printStackTrace();
         }
         mealsEaten++;
-        new Thread(){
-            public void run() {
-                ClientServiceImpl.updatePhilosopherForAllClientsCall(id, mealsEaten);
-            }
-        }.start();
         seat.removePhilosopher();
         seat = null;
         if(RestoreClient.isDebugging()) {
@@ -149,12 +143,21 @@ public class Philosopher extends Thread {
     }
 
     private SeatProposal searchSeat() {
+        if(RestoreClient.isDebugging()) {
+            System.out.println("Philosopher " + id + " tries to find seat.");
+        }
         try {
             SeatProposal currentBestSeatProposal = RestoreClient.getLeftClient().searchSeat(Main.lookupName);
             SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
 
             if(currentBestSeatProposal.compareTo(ownSeatProposal) > 0) {
+                if(RestoreClient.isDebugging()) {
+                    System.out.println("Philosopher " + id + " found seat on other table.");
+                }
                 return currentBestSeatProposal;
+            }
+            if(RestoreClient.isDebugging()) {
+                System.out.println("Philosopher " + id + " found seat on own table.");
             }
             return ownSeatProposal;
 
@@ -225,5 +228,17 @@ public class Philosopher extends Thread {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public int getMealsEaten() {
+        return mealsEaten;
+    }
+
+    public int getIdent() {
+        return id;
     }
 }

@@ -45,13 +45,8 @@ public class Fork implements Serializable {
 
     public void releaseFork() {
         available = true;
-        if(rightSeat != null) {
-            synchronized (monitor) {
-                monitor.notifyAll();
-            }
-        }
-        else {
-            ClientServiceImpl.notifyReleaseRightForkCall();
+        synchronized (monitor) {
+            monitor.notifyAll();
         }
     }
 
@@ -61,5 +56,9 @@ public class Fork implements Serializable {
 
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+
+    public boolean isAvailable() {
+        return available;
     }
 }

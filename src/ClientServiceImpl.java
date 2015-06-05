@@ -18,8 +18,6 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     private List<Philosopher> philosophers;
 
     TablePart tablePart = null;
-    private static Object leftForkMonitor = new Object();
-    private static boolean leftForkAvailable = true;
     protected ClientServiceImpl() throws RemoteException {
 
         neighbourList = new HashMap<>();
@@ -65,7 +63,6 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-
         philosophers = new ArrayList<>(allPhilosopher+allHungryPhilosopher);
 
         new RestoreClient(allSeats, allPhilosopher, allHungryPhilosopher, eatTime, meditationTime, sleepTime, runTimeInSeconds, leftneighbourIP, leftneighbourLookupName, rightneighbourIP, rightneighbourLookupName, leftClient, rightClient, debugging);
@@ -97,6 +94,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             currentBestSeatProposal = RestoreClient.getLeftClient().searchSeat(startingClientName);
         }
         SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
+        System.out.println((ownSeatProposal== null)+"asd");
 
         if(currentBestSeatProposal != null && currentBestSeatProposal.compareTo(ownSeatProposal) > 0) {
             return currentBestSeatProposal;
@@ -105,8 +103,10 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     @Override
-    public void updatePhilosopher(int philosopherId, int newEatCount) throws RemoteException {
-        philosophers.get(philosopherId).setMealsEaten(newEatCount);
+    public void updatePhilosophers(HashMap<Integer, Integer> philsophersUpdate) throws RemoteException {
+        for(Map.Entry<Integer, Integer> philosopher : philsophersUpdate.entrySet()){
+            philosophers.get(philosopher.getKey()).setMealsEaten(philosopher.getValue());
+        }
     }
 
     @Override
@@ -115,25 +115,37 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     @Override
-    public void notifyReleaseFirstFork() throws RemoteException {
-        leftForkAvailable = true;
-        leftForkMonitor.notifyAll();
-    }
-
-    @Override
-    public void notifyReleaseLastFork() throws RemoteException {
-        Fork fork = tablePart.getSeats().get(tablePart.getSeats().size() - 1).getRightFork();
-        fork.setAvailable(true);
-        fork.getMonitor().notifyAll();
-    }
-
-    @Override
-    public void awakePhilosopherAddToQueue(int philosopherId, int seatNumber) throws RemoteException {
+    public void awakePhilosopherAddToQueue(int philosopherId, int seatNumber, int mealsEaten) throws RemoteException {
+        System.out.println("Debug:" + philosophers.size());
         Philosopher philosopher = philosophers.get(philosopherId);
         philosopher.setSeat(tablePart.getSeat(seatNumber));
+        philosopher.setMealsEaten(mealsEaten);
         philosopher.setActive(true);
         philosopher.setStatus(Status.EATING);
         philosopher.getMonitor().notifyAll();
+    }
+
+    @Override
+    public void lastForkWait() throws RemoteException {
+        Fork fork = tablePart.getSeat(tablePart.getSeats().size()-1).getRightFork();
+        synchronized (fork.getMonitor()) {
+            if(fork.isAvailable()) {
+                return;
+            }
+            try {
+                fork.getMonitor().wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void releaseLastFork() throws RemoteException {
+        Fork fork = tablePart.getSeat(tablePart.getSeats().size()-1).getRightFork();
+        synchronized (fork.getMonitor()) {
+            fork.getMonitor().notifyAll();
+        }
     }
 
     public void setMaster(MasterRemote master, String masterName){
@@ -159,13 +171,18 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         System.out.println("Master: "+masterName);
     }
 
-    public static void updatePhilosopherForAllClientsCall(int PhilosopherId, int newEatCount){
-        for(Map.Entry<String, ClientRemote> entry : neighbourList.entrySet()) {
-            try {
-                entry.getValue().updatePhilosopher(PhilosopherId, newEatCount);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+    public static void updatePhilosophersForNeighbor(List<Philosopher> philosophers){
+        ClientRemote rightNeighbor = RestoreClient.getRightClient();
+        HashMap<Integer, Integer> philsophersUpdate = new HashMap<>();
+        for(Philosopher philosopher : philosophers) {
+            if(philosopher.isActive()) {
+                philsophersUpdate.put(philosopher.getIdent(), philosopher.getMealsEaten());
             }
+        }
+        try {
+            rightNeighbor.updatePhilosophers(philsophersUpdate);
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 
@@ -178,33 +195,29 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         return false;
     }
 
+    public static void awakePhilosopherAddToQueueCall(int philosopherId, int seatNumber, String name, int mealsEaten) {
+        try {
+            neighbourList.get(name).awakePhilosopherAddToQueue(philosopherId, seatNumber, mealsEaten);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void leftForkWaitCall() {
+        try {
+            RestoreClient.getLeftClient().lastForkWait();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void notifyReleaseLeftForkCall() {
-        leftForkAvailable = true;
         try {
-            RestoreClient.getLeftClient().notifyReleaseLastFork();
+            RestoreClient.getLeftClient().releaseLastFork();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-    }
 
-    public static void notifyReleaseRightForkCall() {
-        try {
-            RestoreClient.getRightClient().notifyReleaseFirstFork();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static Object getLeftForkMonitor() {
-        return leftForkMonitor;
-    }
-
-    public static void awakePhilosopherAddToQueueCall(int philosopherId, int seatNumber, String name) {
-        try {
-            neighbourList.get(name).awakePhilosopherAddToQueue(philosopherId, seatNumber);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 }
 

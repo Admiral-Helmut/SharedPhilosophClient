@@ -1,8 +1,10 @@
+import java.io.Serializable;
+
 /**
  * VSS
  * Created by David on 01.06.2015.
  */
-public class SeatProposal implements Comparable<SeatProposal>{
+public class SeatProposal implements Comparable<SeatProposal>, Serializable{
     private int seatNumber;
     private int waitingPhilosophersCount;
     private String name;

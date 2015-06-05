@@ -1,5 +1,6 @@
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 
 /**
  * VSS
@@ -17,13 +18,13 @@ public interface ClientRemote extends Remote {
 
     SeatProposal searchSeat(String startingClientName) throws RemoteException;
 
-    void updatePhilosopher(int philosopherId, int newEatCount) throws RemoteException;
+    void updatePhilosophers(HashMap<Integer, Integer> philsophersUpdate) throws RemoteException;
 
     boolean takeForkIfAvailable() throws RemoteException;
 
-    void notifyReleaseFirstFork() throws RemoteException;
+    void awakePhilosopherAddToQueue(int philosopherId, int seatNumber, int mealsEaten) throws RemoteException;
 
-    void notifyReleaseLastFork() throws RemoteException;
+    void lastForkWait() throws RemoteException;
 
-    void awakePhilosopherAddToQueue(int philosopherId, int seatNumber) throws RemoteException;
+    void releaseLastFork() throws RemoteException;
 }

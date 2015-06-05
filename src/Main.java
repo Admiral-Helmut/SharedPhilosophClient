@@ -10,8 +10,8 @@ import java.rmi.registry.LocateRegistry;
 public class Main {
 
 
-    public static String masterIP = "127.0.0.1";
-    public static String ownIP = "127.0.0.1";
+    public static String masterIP = "192.168.178.3";
+    public static String ownIP = "192.168.178.1";
     public static String lookupName = "Client1";
 
 
@@ -22,18 +22,17 @@ public class Main {
         if(args.length>1){
             ownIP = args[0];
             masterIP = args[1];
-
         }
 
 
-//        try{
-//
-//            LocateRegistry.createRegistry(1099);
-//            System.out.println("Start der Registry erfolgreich!");
-//
-//        }catch(Exception e){
-//            System.out.println("Start der Registry fehlgeschlagen!");
-//        }
+        try{
+
+            LocateRegistry.createRegistry(1099);
+            System.out.println("Start der Registry erfolgreich!");
+
+        }catch(Exception e){
+            System.out.println("Start der Registry fehlgeschlagen!");
+        }
 
 
 
