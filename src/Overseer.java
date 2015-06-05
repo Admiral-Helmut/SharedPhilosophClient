@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -7,9 +8,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class Overseer extends Thread {
     private long endTime;
-    private List<Philosopher> philosophers;
+    private ConcurrentHashMap<Integer,Philosopher> philosophers;
 
-    public Overseer(CopyOnWriteArrayList<Philosopher> philosophers) {
+    public Overseer(ConcurrentHashMap<Integer,Philosopher> philosophers) {
         this.philosophers = philosophers;
     }
 
@@ -55,7 +56,7 @@ public class Overseer extends Thread {
 
                 long ownSum = 0;
                 int ownCount = 0;
-                for (Philosopher philosopher : philosophers) {
+                for (Philosopher philosopher : philosophers.values()) {
                     if(philosopher.isActive()) {
                         ownSum += philosopher.getMealsEaten();
                         ownCount ++;
@@ -74,7 +75,7 @@ public class Overseer extends Thread {
 
                 int average = ((int)(sum / count));
 
-                for (Philosopher philosopher : philosophers) {
+                for (Philosopher philosopher : philosophers.values()) {
                     if(philosopher.isActive()) {
                         if(!philosopher.isPunished() && philosopher.getMealsEaten() > average + 20) {
                             if(RestoreClient.isDebugging()) {

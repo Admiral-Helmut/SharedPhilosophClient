@@ -186,7 +186,6 @@ public class Philosopher extends Thread {
 
         if(this.seat == null) {
             try {
-                System.out.println("Philosopher " + id + "is waiting");
                 synchronized (monitor) {
                     monitor.wait();
                 }
