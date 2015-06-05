@@ -21,18 +21,19 @@ public class Seat {
         }
     }
 
-    public synchronized Seat getSeatWithSmallesQueue(Philosopher philosopher) {
+    public Seat getSeatWithSmallesQueue(Philosopher philosopher) {
         int leftQueueSize = getQueueSizeOfLeftNeighbour();
         int rightQueueSize = getQueueSizeOfRightNeighbour();
         int ownQueueSize = getQueueSize();
-
         if ((leftQueueSize < 0 || ownQueueSize <= leftQueueSize) && (rightQueueSize < 0 || ownQueueSize <= rightQueueSize)) {
-            waitingPhilosophers.add(philosopher);
-            if (isAvailable()) {
-                this.philosopher = philosopher;
-                return this;
-            } else {
-                return null;
+            synchronized (monitor) {
+                waitingPhilosophers.add(philosopher);
+                if (isAvailable()) {
+                    this.philosopher = philosopher;
+                    return this;
+                } else {
+                    return null;
+                }
             }
         } else {
             if (RestoreClient.isDebugging()) {

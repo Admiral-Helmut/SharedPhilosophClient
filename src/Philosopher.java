@@ -72,7 +72,7 @@ public class Philosopher extends Thread {
         if(isPunished()) {
             status = Status.MEDITATING;
             try {
-                sleep(RestoreClient.getMeditationTime()*5);
+                sleep(RestoreClient.getMeditationTime() * 5);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -183,8 +183,10 @@ public class Philosopher extends Thread {
 
     private void takeSeatWhenAvailable(Seat seat) {
         this.seat = seat.getSeatWithSmallesQueue(this);
+
         if(this.seat == null) {
             try {
+                System.out.println("Philosopher " + id + "is waiting");
                 synchronized (monitor) {
                     monitor.wait();
                 }

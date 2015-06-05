@@ -78,7 +78,7 @@ public class Overseer extends Thread {
                     if(philosopher.isActive()) {
                         if(!philosopher.isPunished() && philosopher.getMealsEaten() > average + 20) {
                             if(RestoreClient.isDebugging()) {
-                                System.out.println("Philosopher " + philosopher.getIdent() + " got punsihed because he eat "
+                                System.out.println("Philosopher " + philosopher.getIdent() + " got punished because he eat "
                                 + philosopher.getMealsEaten() + " which is more then average of " + average + "!");
                             }
                             philosopher.setPunished(true);
