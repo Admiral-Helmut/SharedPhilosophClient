@@ -91,7 +91,6 @@ public class Philosopher extends Thread {
                 System.out.println("Philosopher " + id + " tries to get left fork.");
             }
             while (!seat.takeLeftForkIfAvailable()) {
-                System.out.println("TEST" + id + "::"+(seat.getLeftFork() == null));
                 try {
                     if(seat.getLeftFork() == null) {
                         ClientServiceImpl.leftForkWaitCall();

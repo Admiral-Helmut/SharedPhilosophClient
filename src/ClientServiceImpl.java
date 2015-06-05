@@ -144,6 +144,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     public void releaseLastFork() throws RemoteException {
         Fork fork = tablePart.getSeat(tablePart.getSeats().size()-1).getRightFork();
         synchronized (fork.getMonitor()) {
+            fork.setAvailable(true);
             fork.getMonitor().notifyAll();
         }
     }
