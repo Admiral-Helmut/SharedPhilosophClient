@@ -17,7 +17,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     private static HashMap<String, ClientRemote> neighbourList;
     MasterRemote master;
     String masterName;
-    private List<Philosopher> philosophers = new ArrayList<>();
+    private static Philosopher[] philosophers;
 
     TablePart tablePart = null;
     protected ClientServiceImpl() throws RemoteException {
@@ -64,7 +64,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-
+        philosophers = new Philosopher[allPhilosopher+allHungryPhilosopher];
         new RestoreClient(allSeats, allPhilosopher, allHungryPhilosopher, eatTime, meditationTime, sleepTime, runTimeInSeconds, leftneighbourIP, leftneighbourLookupName, rightneighbourIP, rightneighbourLookupName, leftClient, rightClient, debugging);
         tablePart = new TablePart(seats);
         System.out.println((RestoreClient.getLeftClient() == null)+":" + (RestoreClient.getRightClient() == null));
@@ -72,14 +72,14 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             boolean b = (i+1)>=philosopherOffset&&(i+1)<philosopherOffset+philosopher;
 
             Philosopher p = new Philosopher((i+1),false, b, leftneighbourIP, leftneighbourLookupName);
-            philosophers.add(p);
+            philosophers[i] = p;
         }
 
         for(int i =0; i < RestoreClient.getAllHungryPhilosopher(); i++){
             boolean b = (i+1)>=hungryPhilosopherOffset&&(i+1)<hungryPhilosopherOffset+hungryPhilosopher;
 
             Philosopher p = new Philosopher((i+1+RestoreClient.getAllPhilosopher()),true, b, leftneighbourIP, leftneighbourLookupName);
-            philosophers.add(p);
+            philosophers[i+allPhilosopher] = p;
         }
         Overseer overseer = new Overseer(philosophers);
 
@@ -90,7 +90,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
                 e.printStackTrace();
             }
         }
-        System.out.println(philosophers.size()+"asd");
+        System.out.println(philosophers.length+"asd");
         for(Philosopher phil : philosophers) {
             phil.start();
         }
@@ -100,7 +100,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     public SeatProposal searchSeat(String startingClientName, int ident) throws RemoteException {
         SeatProposal currentBestSeatProposal = null;
         if (! startingClientName.equals(RestoreClient.getLeftneighbourLookupName())) {
-            Philosopher philosopher = philosophers.get(ident-1);
+            Philosopher philosopher = philosophers[ident-1];
             currentBestSeatProposal = philosopher.getLeftClient().searchSeat(startingClientName, ident);
         }
         SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
@@ -114,7 +114,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     @Override
     public void updatePhilosophers(HashMap<Integer, Integer> philsophersUpdate) throws RemoteException {
         for(Map.Entry<Integer, Integer> philosopher : philsophersUpdate.entrySet()){
-            philosophers.get(philosopher.getKey() - 1).setMealsEaten(philosopher.getValue());
+            philosophers[philosopher.getKey() - 1].setMealsEaten(philosopher.getValue());
         }
     }
 
@@ -129,7 +129,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         if(RestoreClient.isDebugging()) {
             System.out.println("Philosopher " + philosopherId + " activated with eat count " + mealsEaten + ".");
         }
-        Philosopher philosopher = philosophers.get(philosopherId-1);
+        Philosopher philosopher = philosophers[philosopherId-1];
         Seat seat = tablePart.getSeat(seatNumber);
         philosopher.setMealsEaten(mealsEaten);
         philosopher.setActive(true);
@@ -210,7 +210,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         System.out.println("Master: "+masterName);
     }
 
-    public static void updatePhilosophersForNeighborCall(List<Philosopher> philosophers){
+    public static void updatePhilosophersForNeighborCall(Philosopher[] philosophers){
         ClientRemote rightNeighbor = RestoreClient.getRightClient();
         HashMap<Integer, Integer> philosophersUpdate = new HashMap<>();
         for(Philosopher philosopher : philosophers) {
