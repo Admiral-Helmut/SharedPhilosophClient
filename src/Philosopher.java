@@ -175,25 +175,13 @@ public class Philosopher extends Thread {
             System.out.println("Philosopher " + ident + " tries to find seat.");
         }
         try {
-            if(mealsEaten == 0) {
-                System.out.println("1ASD:"+ident);
-            }
             SeatProposal currentBestSeatProposal = leftClient.searchSeat(Main.lookupName, ident);
-            if(mealsEaten == 0) {
-                System.out.println("2ASD:"+ident);
-            }
 
             SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
-            if(mealsEaten == 0) {
-                System.out.println("3ASD:"+ident);
-            }
 
             if(currentBestSeatProposal.isBetterThen(ownSeatProposal)) {
                 if(RestoreClient.isDebugging()) {
                     System.out.println("Philosopher " + ident + " found seat on other table, it was better: "+currentBestSeatProposal.getWaitingPhilosophersCount()+"-"+ownSeatProposal.getWaitingPhilosophersCount());
-                }
-                if(mealsEaten == 0) {
-                    System.out.println("4ASD:"+ident);
                 }
 
                 return currentBestSeatProposal;
@@ -202,9 +190,6 @@ public class Philosopher extends Thread {
                 System.out.println("5ASD:"+ident);
             }
 
-            if(RestoreClient.isDebugging()) {
-                System.out.println("Philosopher " + ident + " found seat on own table.");
-            }
             return ownSeatProposal;
 
         } catch (RemoteException e) {

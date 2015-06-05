@@ -136,6 +136,10 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         philosopher.setStatus(Status.EATING);
         philosopher.setNewSeat(seat);
 
+        if(mealsEaten == 0) {
+            System.out.println("asdasdasd"+ philosopherId + ":" + philosopher.getIdent());
+        }
+
         synchronized (philosopher.getMonitor()){
             philosopher.getMonitor().notifyAll();
         }
