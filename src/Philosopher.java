@@ -91,6 +91,7 @@ public class Philosopher extends Thread {
                 System.out.println("Philosopher " + id + " tries to get left fork.");
             }
             while (!seat.takeLeftForkIfAvailable()) {
+                System.out.println("TEST" + id + "::"+(seat.getLeftFork() == null));
                 try {
                     if(seat.getLeftFork() == null) {
                         ClientServiceImpl.leftForkWaitCall();
@@ -137,6 +138,12 @@ public class Philosopher extends Thread {
         mealsEaten++;
         seat.removePhilosopher();
         seat = null;
+        if(mealsEaten % 3 == 0) {
+            status = Status.SLEEPING;
+        }
+        else{
+            status = Status.MEDITATING;
+        }
         if(RestoreClient.isDebugging()) {
             System.out.println("Philosopher " + id + " finished his " + mealsEaten + ". meal.");
         }

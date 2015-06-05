@@ -15,6 +15,7 @@ public class Fork implements Serializable {
     public Fork(Seat seat){
         this.leftSeat = seat;
         this.leftSeat.setRightFork(this);
+        available = true;
     }
 
     public void setRightSeat(Seat seat) {

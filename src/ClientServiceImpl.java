@@ -30,7 +30,6 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     @Override
     public boolean setNeighbour(String ip, String lookupName) throws RemoteException {
-
         ClientRemote neighbourRemote = null;
         try {
             neighbourRemote = (ClientRemote) Naming.lookup("rmi://" + ip + "/"+lookupName);
@@ -94,7 +93,6 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             currentBestSeatProposal = RestoreClient.getLeftClient().searchSeat(startingClientName);
         }
         SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
-        System.out.println((ownSeatProposal== null)+"asd");
 
         if(currentBestSeatProposal != null && currentBestSeatProposal.compareTo(ownSeatProposal) > 0) {
             return currentBestSeatProposal;
@@ -116,7 +114,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     @Override
     public void awakePhilosopherAddToQueue(int philosopherId, int seatNumber, int mealsEaten) throws RemoteException {
-        System.out.println("Debug:" + philosophers.size());
+        if(RestoreClient.isDebugging()) {
+            System.out.println("Philosopher " + philosopherId + " activated with eat count " + mealsEaten + ".");
+        }
         Philosopher philosopher = philosophers.get(philosopherId);
         philosopher.setSeat(tablePart.getSeat(seatNumber));
         philosopher.setMealsEaten(mealsEaten);
