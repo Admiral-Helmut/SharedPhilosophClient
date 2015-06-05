@@ -122,7 +122,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         philosopher.setMealsEaten(mealsEaten);
         philosopher.setActive(true);
         philosopher.setStatus(Status.EATING);
-        philosopher.getMonitor().notifyAll();
+        synchronized (philosopher.getMonitor()){
+            philosopher.getMonitor().notifyAll();
+        }
     }
 
     @Override
