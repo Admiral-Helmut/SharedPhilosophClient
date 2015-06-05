@@ -4,7 +4,7 @@ import java.io.Serializable;
  * VSS
  * Created by David on 01.06.2015.
  */
-public class SeatProposal implements Comparable<SeatProposal>, Serializable{
+public class SeatProposal implements Serializable{
     private int seatNumber;
     private int waitingPhilosophersCount;
     private String name;
@@ -17,16 +17,8 @@ public class SeatProposal implements Comparable<SeatProposal>, Serializable{
         this.ip = ip;
     }
 
-
-
-    public int compareTo(SeatProposal other) {
-        if(waitingPhilosophersCount > other.getWaitingPhilosophersCount()) {
-            return 1;
-        }
-        if(waitingPhilosophersCount < other.getWaitingPhilosophersCount()) {
-            return -1;
-        }
-        return 0;
+    public boolean isBetterThen(SeatProposal other) {
+        return waitingPhilosophersCount < other.getWaitingPhilosophersCount();
     }
 
     public int getWaitingPhilosophersCount() {
