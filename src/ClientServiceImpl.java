@@ -17,7 +17,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     private static HashMap<String, ClientRemote> neighbourList;
     MasterRemote master;
     String masterName;
-    private ConcurrentHashMap<Integer,Philosopher> philosophers;
+    private CopyOnWriteArrayList<Philosopher> philosophers = new CopyOnWriteArrayList<>();
 
     TablePart tablePart = null;
     protected ClientServiceImpl() throws RemoteException {
@@ -64,7 +64,6 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        philosophers = new ConcurrentHashMap<>();
 
         new RestoreClient(allSeats, allPhilosopher, allHungryPhilosopher, eatTime, meditationTime, sleepTime, runTimeInSeconds, leftneighbourIP, leftneighbourLookupName, rightneighbourIP, rightneighbourLookupName, leftClient, rightClient, debugging);
         tablePart = new TablePart(seats);
@@ -73,14 +72,14 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             boolean b = (i+1)>=philosopherOffset&&(i+1)<philosopherOffset+philosopher;
 
             Philosopher p = new Philosopher((i+1),false, b, leftneighbourIP, leftneighbourLookupName);
-            philosophers.put(i, p);
+            philosophers.add(p);
         }
 
         for(int i =0; i < RestoreClient.getAllHungryPhilosopher(); i++){
             boolean b = (i+1)>=hungryPhilosopherOffset&&(i+1)<hungryPhilosopherOffset+hungryPhilosopher;
 
             Philosopher p = new Philosopher((i+1+RestoreClient.getAllPhilosopher()),true, b, leftneighbourIP, leftneighbourLookupName);
-            philosophers.put(i + RestoreClient.getAllPhilosopher(), p);
+            philosophers.add(p);
         }
         Overseer overseer = new Overseer(philosophers);
 
@@ -92,7 +91,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             }
         }
 
-        for(Philosopher phil : philosophers.values()) {
+        for(Philosopher phil : philosophers) {
             phil.start();
         }
         overseer.start();
@@ -115,7 +114,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     @Override
     public void updatePhilosophers(HashMap<Integer, Integer> philsophersUpdate) throws RemoteException {
         for(Map.Entry<Integer, Integer> philosopher : philsophersUpdate.entrySet()){
-            philosophers.get(philosopher.getKey()-1).setMealsEaten(philosopher.getValue());
+            philosophers.get(philosopher.getKey() - 1).setMealsEaten(philosopher.getValue());
         }
     }
 
@@ -172,7 +171,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
         long sum = 0;
         int count = 0;
-        for (Philosopher philosopher : philosophers.values()) {
+        for (Philosopher philosopher : philosophers) {
             if(philosopher.isActive()) {
                 sum += philosopher.getMealsEaten();
                 count ++;
@@ -211,10 +210,10 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         System.out.println("Master: "+masterName);
     }
 
-    public static void updatePhilosophersForNeighborCall(ConcurrentHashMap<Integer,Philosopher> philosophers){
+    public static void updatePhilosophersForNeighborCall(CopyOnWriteArrayList<Philosopher> philosophers){
         ClientRemote rightNeighbor = RestoreClient.getRightClient();
         HashMap<Integer, Integer> philosophersUpdate = new HashMap<>();
-        for(Philosopher philosopher : philosophers.values()) {
+        for(Philosopher philosopher : philosophers) {
             if(philosopher.isActive()) {
                 philosophersUpdate.put(philosopher.getIdent(), philosopher.getMealsEaten());
             }
