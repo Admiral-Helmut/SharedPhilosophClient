@@ -94,7 +94,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         }
         SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
 
-        if(currentBestSeatProposal != null && currentBestSeatProposal.compareTo(ownSeatProposal) > 0) {
+        if(currentBestSeatProposal != null && currentBestSeatProposal.isBetterThen(ownSeatProposal)) {
             return currentBestSeatProposal;
         }
         return ownSeatProposal;
@@ -118,10 +118,15 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             System.out.println("Philosopher " + philosopherId + " activated with eat count " + mealsEaten + ".");
         }
         Philosopher philosopher = philosophers.get(philosopherId-1);
-        philosopher.setSeat(tablePart.getSeat(seatNumber));
+        Seat seat = tablePart.getSeat(seatNumber);
         philosopher.setMealsEaten(mealsEaten);
         philosopher.setActive(true);
+        seat.getSeatWithSmallesQueue(philosopher);
         philosopher.setStatus(Status.EATING);
+        philosopher.setJustChangedTable(true);
+        //philosopher.setSeat(tablePart.getSeat(seatNumber));
+        //philosopher.setStatus(Status.EATING);
+
         synchronized (philosopher.getMonitor()){
             philosopher.getMonitor().notifyAll();
         }
