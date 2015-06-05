@@ -175,7 +175,7 @@ public class Philosopher extends Thread {
             System.out.println("Philosopher " + ident + " tries to find seat.");
         }
         try {
-            SeatProposal currentBestSeatProposal = leftClient.searchSeat(Main.lookupName);
+            SeatProposal currentBestSeatProposal = leftClient.searchSeat(Main.lookupName, ident);
             SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
 
             if(currentBestSeatProposal.isBetterThen(ownSeatProposal)) {
@@ -273,5 +273,9 @@ public class Philosopher extends Thread {
 
     public void setNewSeat(Seat newSeat) {
         this.newSeat = newSeat;
+    }
+
+    public ClientRemote getLeftClient() {
+        return leftClient;
     }
 }
