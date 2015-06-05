@@ -63,7 +63,7 @@ public class Philosopher extends Thread {
 
         }
 
-        System.out.println("Programm beendet!");
+        System.out.println("Philosopher finished with " + mealsEaten + " meals Eaten.");
 
 
     }
