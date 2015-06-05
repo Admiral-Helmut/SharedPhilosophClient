@@ -18,11 +18,27 @@ public class Overseer extends Thread {
         endTime = RestoreClient.getEndTime();
         new PhilosoperUpdater().start();
         new Punisher().start();
-
+        new RMIistdoofThread().start();
         while(System.currentTimeMillis() < endTime) {
             //TODO: Overseer stuff
         }
     }
+
+    private class RMIistdoofThread extends Thread {
+        public void run() {
+            while(System.currentTimeMillis() < endTime) {
+                try {
+                    sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                for(Philosopher philosopher : philosophers) {
+                    System.out.println(philosopher.getIdent() + ":" + philosopher.getMealsEaten() + ":" + philosopher.getStatus() + ":" + philosopher.isActive() + ":" + philosopher.isPunished());
+                }
+            }
+        }
+    }
+
 
 
     private class PhilosoperUpdater extends Thread {

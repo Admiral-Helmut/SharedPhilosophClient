@@ -278,4 +278,8 @@ public class Philosopher extends Thread {
     public ClientRemote getLeftClient() {
         return leftClient;
     }
+
+    public Status getStatus() {
+        return status;
+    }
 }
