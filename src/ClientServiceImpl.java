@@ -84,7 +84,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             philosophers.add(p);
             p.start();
         }
-        new Overseer().start();
+        new Overseer(philosophers).start();
 
     }
 
@@ -199,16 +199,16 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         System.out.println("Master: "+masterName);
     }
 
-    public static void updatePhilosophersForNeighbor(List<Philosopher> philosophers){
+    public static void updatePhilosophersForNeighborCall(List<Philosopher> philosophers){
         ClientRemote rightNeighbor = RestoreClient.getRightClient();
-        HashMap<Integer, Integer> philsophersUpdate = new HashMap<>();
+        HashMap<Integer, Integer> philosophersUpdate = new HashMap<>();
         for(Philosopher philosopher : philosophers) {
             if(philosopher.isActive()) {
-                philsophersUpdate.put(philosopher.getIdent(), philosopher.getMealsEaten());
+                philosophersUpdate.put(philosopher.getIdent(), philosopher.getMealsEaten());
             }
         }
         try {
-            rightNeighbor.updatePhilosophers(philsophersUpdate);
+            rightNeighbor.updatePhilosophers(philosophersUpdate);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * VSS
@@ -7,6 +8,10 @@ import java.util.List;
 public class Overseer extends Thread {
     private long endTime;
     private List<Philosopher> philosophers;
+
+    public Overseer(CopyOnWriteArrayList<Philosopher> philosophers) {
+        this.philosophers = philosophers;
+    }
 
     public void run() {
         endTime = RestoreClient.getEndTime();
@@ -29,7 +34,7 @@ public class Overseer extends Thread {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                ClientServiceImpl.updatePhilosophersForNeighbor(philosophers);
+                ClientServiceImpl.updatePhilosophersForNeighborCall(philosophers);
             }
         }
     }
