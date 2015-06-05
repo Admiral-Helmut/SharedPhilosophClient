@@ -158,7 +158,7 @@ public class Philosopher extends Thread {
 
             if(currentBestSeatProposal.compareTo(ownSeatProposal) > 0) {
                 if(RestoreClient.isDebugging()) {
-                    System.out.println("Philosopher " + id + " found seat on other table.");
+                    System.out.println("Philosopher " + id + " found seat on other table, it was better: "+currentBestSeatProposal.getWaitingPhilosophersCount()+"-"+ownSeatProposal.getWaitingPhilosophersCount());
                 }
                 return currentBestSeatProposal;
             }
