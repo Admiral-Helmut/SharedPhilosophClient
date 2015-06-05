@@ -71,6 +71,11 @@ public class Philosopher extends Thread {
     private boolean tryToEat() {
         if(isPunished()) {
             status = Status.MEDITATING;
+            try {
+                sleep(RestoreClient.getMeditationTime()*5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             setPunished(false);
             return true;
         }else {

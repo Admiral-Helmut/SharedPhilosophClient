@@ -28,9 +28,7 @@ public class Overseer extends Thread {
         public void run() {
             while(System.currentTimeMillis() < endTime) {
                 try {
-                    synchronized (this) {
-                        wait(RestoreClient.getMeditationTime()*5);
-                    }
+                    sleep(RestoreClient.getMeditationTime()*5);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -43,9 +41,7 @@ public class Overseer extends Thread {
         public void run() {
             while(System.currentTimeMillis() < endTime) {
                 try {
-                    synchronized (this) {
-                        wait(RestoreClient.getMeditationTime()*5);
-                    }
+                    sleep(RestoreClient.getMeditationTime()*5);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
