@@ -35,6 +35,10 @@ public class Overseer extends Thread {
                 for(Philosopher philosopher : philosophers) {
                     System.out.println(philosopher.getIdent() + ":" + philosopher.getMealsEaten() + ":" + philosopher.getStatus() + ":" + philosopher.isActive() + ":" + philosopher.isPunished());
                 }
+                for(Seat seat : TablePart.getTablePart().getSeats()){
+                    System.out.print(seat.getQueueSize() + "-");
+                }
+                System.out.println("\n");
             }
         }
     }

@@ -29,6 +29,11 @@ public class Philosopher extends Thread {
     }
 
     public void run(){
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         endTime = RestoreClient.getEndTime();
         while(System.currentTimeMillis()<=endTime){
             if(!active) {
