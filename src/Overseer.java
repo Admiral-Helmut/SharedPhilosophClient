@@ -8,9 +8,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class Overseer extends Thread {
     private long endTime;
-    private Philosopher[] philosophers;
+    private List<Philosopher> philosophers;
 
-    public Overseer(Philosopher[] philosophers) {
+    public Overseer(List<Philosopher> philosophers) {
         this.philosophers = philosophers;
     }
 

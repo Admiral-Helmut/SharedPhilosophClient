@@ -19,24 +19,13 @@ public class Philosopher extends Thread {
     private Seat newSeat;
     private int mealsEaten;
     private long endTime;
-    private ClientRemote leftClient;
-    private ClientRemote rightClient;
 
-    public Philosopher(int ident, boolean hungry, boolean active, String leftNeighbourIP, String leftNeighbourLookup){
+    public Philosopher(int ident, boolean hungry, boolean active){
 
         this.ident = ident;
         this.hungry = hungry;
         this.active = active;
         this.status = Status.MEDITATING;
-        try {
-            leftClient= (ClientRemote) Naming.lookup("rmi://" + leftNeighbourIP + "/" + leftNeighbourLookup);
-        } catch (NotBoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
     public void run(){
@@ -100,7 +89,13 @@ public class Philosopher extends Thread {
                 return true;
             }
             else{
+                if(mealsEaten == 0){
+                    System.out.println("1asd" + ident);
+                }
                 ClientServiceImpl.awakePhilosopherAddToQueueCall(ident, seatProposal.getSeatNumber(), seatProposal.getName(), mealsEaten);
+                if(mealsEaten == 0){
+                    System.out.println("1asd" + ident);
+                }
                 return false;
             }
         }
@@ -175,7 +170,7 @@ public class Philosopher extends Thread {
             System.out.println("Philosopher " + ident + " tries to find seat.");
         }
         try {
-            SeatProposal currentBestSeatProposal = leftClient.searchSeat(Main.lookupName, ident);
+            SeatProposal currentBestSeatProposal = RestoreClient.getLeftClient().searchSeat(Main.lookupName, ident);
 
             SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
 
@@ -276,10 +271,6 @@ public class Philosopher extends Thread {
 
     public void setNewSeat(Seat newSeat) {
         this.newSeat = newSeat;
-    }
-
-    public ClientRemote getLeftClient() {
-        return leftClient;
     }
 
     public Status getStatus() {
