@@ -70,7 +70,7 @@ public class Philosopher extends Thread {
 
         }
 
-        System.out.println("Philosopher finished with " + mealsEaten + " meals Eaten he was " + ((active) ? "activ" : "inaktiv") + ".");
+        System.out.println("Philosopher "+ident+" finished with " + mealsEaten + " meals Eaten he was " + ((active) ? "activ" : "inaktiv") + ".");
 
 
     }
@@ -189,11 +189,8 @@ public class Philosopher extends Thread {
     }
 
     private void takeSeatWhenAvailable(Seat seat) {
-        if(mealsEaten == 0 )
-            System.out.println(ident + " ASD1");
+
         this.seat = seat.getSeatWithSmallesQueue(this);
-        if(mealsEaten == 0 )
-            System.out.println(ident + " ASD2");
 
         if(this.seat == null) {
             try {
@@ -204,8 +201,6 @@ public class Philosopher extends Thread {
                 e.printStackTrace();
             }
         }
-        if(mealsEaten == 0 )
-            System.out.println(ident + " ASD3");
 
     }
 
