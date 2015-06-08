@@ -259,7 +259,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         try {
             return RestoreClient.getLeftClient().takeForkIfAvailable();
         } catch (RemoteException e) {
-            e.printStackTrace();
+            RestoreClient.startRestoring();
         }
         return false;
     }
@@ -283,7 +283,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         try {
             RestoreClient.getLeftClient().lastForkWait();
         } catch (RemoteException e) {
-            e.printStackTrace();
+            RestoreClient.startRestoring();
         }
     }
 
@@ -300,9 +300,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         try {
             return RestoreClient.getRightClient().updateAverage(lookupName);
         } catch (RemoteException e) {
-            e.printStackTrace();
+            RestoreClient.startRestoring();
+            return updateAverageCall(lookupName);
         }
-        return null;
     }
 
     public static HashMap<String, ClientRemote> getNeighbourList() {

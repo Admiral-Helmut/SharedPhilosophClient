@@ -27,7 +27,7 @@ public class RestoreClient {
 
     private static boolean debugging;
 
-
+    private static long lastRestorAttempt;
 
 
     public RestoreClient(int allSeats, int allPhilosopher, int allHungryPhilosopher, int eatTime, int meditationTime, int sleepTime, int runTimeInSeconds, String leftneighbourIP, String leftneighbourLookupName, String rightneighbourIP, String rightneighbourLookupName, ClientRemote leftClient, ClientRemote rightClient, boolean debugging){
@@ -106,9 +106,12 @@ public class RestoreClient {
         return rightClient;
     }
 
-    public static void startRestoring() {
-        ClientServiceImpl.getNeighbourList().remove(leftneighbourLookupName);
-        restoreSetNewNeigbours();
+    public static synchronized void startRestoring() {
+        if(System.currentTimeMillis() > lastRestorAttempt + 1000){
+            ClientServiceImpl.getNeighbourList().remove(leftneighbourLookupName);
+            restoreSetNewNeigbours();
+        }
+        lastRestorAttempt = System.currentTimeMillis();
     }
 
     private static void restoreSetNewNeigbours() {
