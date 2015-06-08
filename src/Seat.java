@@ -1,6 +1,8 @@
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
 /**
@@ -12,7 +14,7 @@ public class Seat {
     private Fork leftFork;
     private Fork rightFork;
     private Philosopher philosopher;
-    private SynchronousQueue<Philosopher> waitingPhilosophers = new SynchronousQueue<>();
+    private final BlockingQueue<Philosopher> waitingPhilosophers = new ArrayBlockingQueue(RestoreClient.getAllHungryPhilosopher()+RestoreClient.getAllPhilosopher());
     private Object monitor = new Object();
 
     public Seat(Fork leftFork) {
@@ -28,7 +30,11 @@ public class Seat {
         int ownQueueSize = getQueueSize();
         if ((leftQueueSize < 0 || ownQueueSize <= leftQueueSize) && (rightQueueSize < 0 || ownQueueSize <= rightQueueSize)) {
             synchronized (monitor) {
-                waitingPhilosophers.add(philosopher);
+                try {
+                    waitingPhilosophers.put(philosopher);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 if (isAvailable()) {
                     this.philosopher = philosopher;
                     return this;
@@ -59,10 +65,6 @@ public class Seat {
 
     public int getQueueSize() {
         return waitingPhilosophers.size();
-    }
-
-    public Object getMonitor() {
-        return monitor;
     }
 
     public boolean isAvailable() {
@@ -108,8 +110,11 @@ public class Seat {
     public void removePhilosopher() {
         releaseLeftFork();
         getRightFork().releaseFork();
-        waitingPhilosophers.remove();
-        philosopher = waitingPhilosophers.peek();
+        try {
+            philosopher = waitingPhilosophers.take();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         if (philosopher != null) {
             philosopher.setSeat(this);
             synchronized (philosopher.getMonitor()) {
