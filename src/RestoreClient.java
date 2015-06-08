@@ -168,7 +168,7 @@ public class RestoreClient {
 
     private static void restoreInformAll() {
         ClientServiceImpl.setRestoringActive(true);
-        if(rightneighbourLookupName.equals(leftneighbourLookupName)){
+        if(!rightneighbourLookupName.equals(leftneighbourLookupName)){
             try {
                 rightClient.restoreInformAll(leftneighbourLookupName);
             } catch (RemoteException e) {

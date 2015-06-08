@@ -60,6 +60,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         try {
             leftClient = (ClientRemote)Naming.lookup("rmi://"+leftneighbourIP+"/"+leftneighbourLookupName);
             rightClient = (ClientRemote)Naming.lookup("rmi://"+rightneighbourIP+"/"+rightneighbourLookupName);
+            ClientRemote ownClient = (ClientRemote)Naming.lookup("rmi://"+Main.ownIP+"/"+Main.lookupName);
+            neighbourList.put(Main.lookupName, ownClient);
         } catch (NotBoundException e) {
             e.printStackTrace();
         } catch (MalformedURLException e) {
@@ -323,7 +325,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         try {
             RestoreClient.getLeftClient().releaseLastFork();
         } catch (RemoteException e) {
-            e.printStackTrace();
+            RestoreClient.startRestoring();
         }
 
     }
