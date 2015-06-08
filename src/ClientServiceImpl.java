@@ -264,12 +264,19 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         return false;
     }
 
-    public static void awakePhilosopherAddToQueueCall(int philosopherId, int seatNumber, String name, int mealsEaten) {
+    public static boolean awakePhilosopherAddToQueueCall(int philosopherId, int seatNumber, String name, int mealsEaten) {
         try {
-            neighbourList.get(name).awakePhilosopherAddToQueue(philosopherId, seatNumber, mealsEaten);
+            if(neighbourList.containsKey(name)){
+                neighbourList.get(name).awakePhilosopherAddToQueue(philosopherId, seatNumber, mealsEaten);
+                return true;
+            }
+            else{
+                return false;
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     public static void leftForkWaitCall() {
@@ -296,6 +303,10 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static HashMap<String, ClientRemote> getNeighbourList() {
+        return neighbourList;
     }
 }
 

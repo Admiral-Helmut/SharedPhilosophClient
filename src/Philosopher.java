@@ -93,7 +93,12 @@ public class Philosopher extends Thread {
                 return true;
             }
             else{
-                ClientServiceImpl.awakePhilosopherAddToQueueCall(ident, seatProposal.getSeatNumber(), seatProposal.getName(), mealsEaten);
+                if(!ClientServiceImpl.awakePhilosopherAddToQueueCall(ident, seatProposal.getSeatNumber(), seatProposal.getName(), mealsEaten)){
+                    SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();;
+                    takeSeatWhenAvailable(TablePart.getTablePart().getSeat(ownSeatProposal.getSeatNumber()));
+                    startEating();
+                    return true;
+                }
                 return false;
             }
         }

@@ -107,6 +107,7 @@ public class RestoreClient {
     }
 
     public static void startRestoring() {
+        ClientServiceImpl.getNeighbourList().remove(leftneighbourLookupName);
         restoreSetNewNeigbours();
     }
 
