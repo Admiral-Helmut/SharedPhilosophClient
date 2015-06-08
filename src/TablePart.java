@@ -62,4 +62,13 @@ public class TablePart {
     public int getQueueSizeForSeat(int index) {
         return seats.get(index).getQueueSize();
     }
+
+    public void restoreSeat() {
+        Fork fork = null;
+        Seat seat = new Seat(fork);
+        fork = new Fork(seat);
+        seats.get(0).setLeftFork(fork);
+        fork.setRightSeat(seats.get(0));
+        seats.add(0, seat);
+    }
 }

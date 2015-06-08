@@ -2,6 +2,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * VSS
@@ -34,4 +35,12 @@ public interface ClientRemote extends Remote {
     void restoreSetRightNeigbour(String lookupNameLostClient, String newLookupName, String newIp) throws RemoteException;
 
     String[] restoreGetLookupNameAndIp(String leftneighbourLookupName) throws RemoteException;
+
+    void restoreInformAll(String lookupNameLostClient) throws RemoteException;
+
+    void restoreFinishedInformAll(String lookupName) throws RemoteException;
+
+    Map<String,Integer> getSeatsForRestoring(String leftneighbourLookupName) throws RemoteException;
+
+    void restoreAddSeat() throws RemoteException;
 }

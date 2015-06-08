@@ -18,6 +18,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     MasterRemote master;
     String masterName;
     private static List<Philosopher> philosophers;
+    private static boolean restoringActive = false;
 
     TablePart tablePart = null;
     protected ClientServiceImpl() throws RemoteException {
@@ -217,6 +218,37 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         }
     }
 
+    @Override
+    public void restoreInformAll(String lookupNameLostClient) throws RemoteException {
+        if(!lookupNameLostClient.equals(RestoreClient.getRightneighbourLookupName())){
+            RestoreClient.getRightClient().restoreInformAll(lookupNameLostClient);
+        }
+        restoringActive = true;
+    }
+
+    @Override
+    public void restoreFinishedInformAll(String lookupName) throws RemoteException {
+        if(!lookupName.equals(RestoreClient.getRightneighbourLookupName())){
+            RestoreClient.getRightClient().restoreFinishedInformAll(lookupName);
+        }
+        restoringActive = false;
+    }
+
+    @Override
+    public Map<String, Integer> getSeatsForRestoring(String leftneighbourLookupName) throws RemoteException {
+        Map<String, Integer> seats = new HashMap<String, Integer>();
+        if(!leftneighbourLookupName.equals(RestoreClient.getRightneighbourLookupName())){
+            seats.putAll(getSeatsForRestoring(leftneighbourLookupName));
+        }
+        seats.put(Main.lookupName, tablePart.getSeats().size());
+        return seats;
+    }
+
+    @Override
+    public void restoreAddSeat() throws RemoteException {
+        tablePart.restoreSeat();
+    }
+
     public void setMaster(MasterRemote master, String masterName){
         this.master = master;
         this.masterName = masterName;
@@ -274,7 +306,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
                 return false;
             }
         } catch (RemoteException e) {
-            e.printStackTrace();
+            RestoreClient.startRestoring();
         }
         return false;
     }
@@ -307,6 +339,22 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     public static HashMap<String, ClientRemote> getNeighbourList() {
         return neighbourList;
+    }
+
+    public static boolean isRestoringActive() {
+        return restoringActive;
+    }
+
+    public static void setRestoringActive(boolean restoringActive) {
+        ClientServiceImpl.restoringActive = restoringActive;
+    }
+
+    public static void restoreAddSeatCall(String fewestSeats) {
+        try {
+            neighbourList.get(fewestSeats).restoreAddSeat();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 }
 

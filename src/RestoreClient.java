@@ -2,6 +2,8 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * VSS
@@ -108,10 +110,71 @@ public class RestoreClient {
 
     public static synchronized void startRestoring() {
         if(System.currentTimeMillis() > lastRestorAttempt + 1000){
+            restoreInformAll();
             ClientServiceImpl.getNeighbourList().remove(leftneighbourLookupName);
+            restoreShareSeats();
             restoreSetNewNeigbours();
+            restoreFinishedInformAll();
         }
         lastRestorAttempt = System.currentTimeMillis();
+    }
+
+    private static void restoreShareSeats() {
+        try {
+            Map<String, Integer> allSeats = new HashMap<String, Integer>();
+            if(!rightneighbourLookupName.equals(leftneighbourLookupName)){
+                allSeats.putAll(rightClient.getSeatsForRestoring(leftneighbourLookupName));
+            }
+            allSeats.put(Main.lookupName, TablePart.getTablePart().getSeats().size());
+            int allSeatsCount = RestoreClient.getAllSeats();
+            int allRemainingSeatsCount = 0;
+            for(Map.Entry<String, Integer> entry : allSeats.entrySet()){
+                allRemainingSeatsCount += entry.getValue();
+            }
+            int restoreSeatsCount = allSeatsCount - allRemainingSeatsCount;
+
+            for(int i = 0; i < restoreSeatsCount; i++) {
+                String fewestSeats = getFewestSeats(allSeats);
+                ClientServiceImpl.restoreAddSeatCall(fewestSeats);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private static String getFewestSeats(Map<String, Integer> allSeats) {
+        String currentFewest = "";
+        int currentFewestCount = Integer.MAX_VALUE;
+        for(Map.Entry<String, Integer> entry : allSeats.entrySet()) {
+            if(entry.getValue() <= currentFewestCount) {
+                currentFewestCount = entry.getValue();
+                currentFewest = entry.getKey();
+            }
+        }
+        return currentFewest;
+    }
+
+    private static void restoreFinishedInformAll() {
+        ClientServiceImpl.setRestoringActive(false);
+        if(rightneighbourLookupName.equals(leftneighbourLookupName)){
+            try {
+                rightClient.restoreFinishedInformAll(Main.lookupName);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static void restoreInformAll() {
+        ClientServiceImpl.setRestoringActive(true);
+        if(rightneighbourLookupName.equals(leftneighbourLookupName)){
+            try {
+                rightClient.restoreInformAll(leftneighbourLookupName);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private static void restoreSetNewNeigbours() {

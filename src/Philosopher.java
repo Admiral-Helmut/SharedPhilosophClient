@@ -173,9 +173,15 @@ public class Philosopher extends Thread {
             System.out.println("Philosopher " + ident + " tries to find seat.");
         }
         try {
-            SeatProposal currentBestSeatProposal = RestoreClient.getLeftClient().searchSeat(Main.lookupName, ident);
-
             SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
+
+            SeatProposal currentBestSeatProposal;
+            if(ClientServiceImpl.isRestoringActive()){
+                currentBestSeatProposal = ownSeatProposal;
+            }
+            else {
+                currentBestSeatProposal = RestoreClient.getLeftClient().searchSeat(Main.lookupName, ident);
+            }
 
             if(currentBestSeatProposal.isBetterThen(ownSeatProposal)) {
                 if(RestoreClient.isDebugging()) {
@@ -194,11 +200,7 @@ public class Philosopher extends Thread {
     }
 
     private void takeSeatWhenAvailable(Seat seat) {
-        if(mealsEaten == 0 )
-            System.out.println(ident + " ASD1");
         this.seat = seat.getSeatWithSmallesQueue(this);
-        if(mealsEaten == 0 )
-            System.out.println(ident + " ASD2");
 
         if(this.seat == null) {
             try {
@@ -209,9 +211,6 @@ public class Philosopher extends Thread {
                 e.printStackTrace();
             }
         }
-        if(mealsEaten == 0 )
-            System.out.println(ident + " ASD3");
-
     }
 
 
