@@ -1,3 +1,8 @@
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+
 /**
  * VSS
  * Created by Admiral Helmut on 20.05.2015.
@@ -99,5 +104,85 @@ public class RestoreClient {
 
     public static ClientRemote getRightClient() {
         return rightClient;
+    }
+
+    public static void startRestoring() {
+        restoreSetRightNeigbour();
+        restoreSetLeftNeigbour();
+    }
+
+    private static void restoreSetLeftNeigbour() {
+        if(rightneighbourLookupName.equals(leftneighbourLookupName)) {
+            leftneighbourLookupName = Main.lookupName;
+            leftneighbourIP = Main.ownIP;
+        }
+        else {
+            try {
+                String[] newData = rightClient.restoreGetLookupNameAndIp(leftneighbourLookupName);
+                leftneighbourLookupName = newData[0];
+                leftneighbourIP = newData[1];
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+
+        }
+        try {
+            leftClient = (ClientRemote)Naming.lookup("rmi://"+leftneighbourIP+"/"+leftneighbourLookupName);
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private static void restoreSetRightNeigbour() {
+        if(rightneighbourLookupName.equals(leftneighbourLookupName)) {
+            rightneighbourLookupName = Main.lookupName;
+            rightneighbourIP = Main.ownIP;
+            try {
+                rightClient = (ClientRemote)Naming.lookup("rmi://"+rightneighbourIP+"/"+rightneighbourLookupName);
+            } catch (NotBoundException e) {
+                e.printStackTrace();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            try {
+                rightClient.restoreSetRightNeigbour(leftneighbourLookupName, Main.lookupName, Main.ownIP);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    public static void setLeftneighbourIP(String leftneighbourIP) {
+        RestoreClient.leftneighbourIP = leftneighbourIP;
+    }
+
+    public static void setLeftneighbourLookupName(String leftneighbourLookupName) {
+        RestoreClient.leftneighbourLookupName = leftneighbourLookupName;
+    }
+
+    public static void setRightneighbourIP(String rightneighbourIP) {
+        RestoreClient.rightneighbourIP = rightneighbourIP;
+    }
+
+    public static void setRightneighbourLookupName(String rightneighbourLookupName) {
+        RestoreClient.rightneighbourLookupName = rightneighbourLookupName;
+    }
+
+    public static void setLeftClient(ClientRemote leftClient) {
+        RestoreClient.leftClient = leftClient;
+    }
+
+    public static void setRightClient(ClientRemote rightClient) {
+        RestoreClient.rightClient = rightClient;
     }
 }

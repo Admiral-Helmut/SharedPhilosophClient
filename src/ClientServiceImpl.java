@@ -90,7 +90,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
                 e.printStackTrace();
             }
         }
-        System.out.println(philosophers.size()+"asd");
+        System.out.println(philosophers.size() + "asd");
         for(Philosopher phil : philosophers) {
             phil.start();
         }
@@ -185,6 +185,36 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             averages.addAll(RestoreClient.getRightClient().updateAverage(lookupName));
         }
         return averages;
+    }
+
+    public void restoreSetRightNeigbour(String lookupNameLostClient, String newLookupName, String newIp) throws RemoteException {
+        if(lookupNameLostClient.equals(RestoreClient.getRightneighbourLookupName())) {
+            RestoreClient.setRightneighbourLookupName(newLookupName);
+            RestoreClient.setRightneighbourIP(newIp);
+            try {
+                ClientRemote newClient = (ClientRemote)Naming.lookup("rmi://"+newIp+"/"+newLookupName);
+                RestoreClient.setRightClient(newClient);
+            } catch (NotBoundException e) {
+                e.printStackTrace();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        else{
+            RestoreClient.getRightClient().restoreSetRightNeigbour(lookupNameLostClient, newLookupName, newIp);
+        }
+    }
+
+    @Override
+    public String[] restoreGetLookupNameAndIp(String leftneighbourLookupName) throws RemoteException {
+        if(leftneighbourLookupName.equals(RestoreClient.getRightneighbourLookupName())){
+            return new String[]{RestoreClient.getRightneighbourLookupName(), RestoreClient.getRightneighbourIP()};
+        }
+        else{
+            return RestoreClient.getRightClient().restoreGetLookupNameAndIp(leftneighbourLookupName);
+        }
     }
 
     public void setMaster(MasterRemote master, String masterName){

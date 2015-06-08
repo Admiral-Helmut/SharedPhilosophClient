@@ -79,6 +79,5 @@ public class Main {
             System.out.println("# Verbindung zum Server FEHLGESCHLAGEN!");
         }
 
-
     }
 }
