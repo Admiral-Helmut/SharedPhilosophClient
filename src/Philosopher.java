@@ -179,9 +179,6 @@ public class Philosopher extends Thread {
 
                 return currentBestSeatProposal;
             }
-            if(mealsEaten == 0) {
-                System.out.println("5ASD:"+ident);
-            }
 
             return ownSeatProposal;
 
@@ -192,7 +189,11 @@ public class Philosopher extends Thread {
     }
 
     private void takeSeatWhenAvailable(Seat seat) {
+        if(mealsEaten == 0 )
+            System.out.println(ident + " ASD1");
         this.seat = seat.getSeatWithSmallesQueue(this);
+        if(mealsEaten == 0 )
+            System.out.println(ident + " ASD2");
 
         if(this.seat == null) {
             try {
@@ -203,6 +204,9 @@ public class Philosopher extends Thread {
                 e.printStackTrace();
             }
         }
+        if(mealsEaten == 0 )
+            System.out.println(ident + " ASD3");
+
     }
 
 

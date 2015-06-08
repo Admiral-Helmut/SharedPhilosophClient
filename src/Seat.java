@@ -30,11 +30,7 @@ public class Seat {
         int ownQueueSize = getQueueSize();
         if ((leftQueueSize < 0 || ownQueueSize <= leftQueueSize) && (rightQueueSize < 0 || ownQueueSize <= rightQueueSize)) {
             synchronized (monitor) {
-                try {
-                    waitingPhilosophers.put(philosopher);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                waitingPhilosophers.add(philosopher);
                 if (isAvailable()) {
                     this.philosopher = philosopher;
                     return this;
@@ -110,11 +106,8 @@ public class Seat {
     public void removePhilosopher() {
         releaseLeftFork();
         getRightFork().releaseFork();
-        try {
-            philosopher = waitingPhilosophers.take();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        waitingPhilosophers.remove();
+        philosopher = waitingPhilosophers.peek();
         if (philosopher != null) {
             philosopher.setSeat(this);
             synchronized (philosopher.getMonitor()) {

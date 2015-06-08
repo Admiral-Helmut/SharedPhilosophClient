@@ -15,6 +15,11 @@ public class Overseer extends Thread {
     }
 
     public void run() {
+        try {
+            sleep(1500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         endTime = RestoreClient.getEndTime();
         new PhilosoperUpdater().start();
         new Punisher().start();
