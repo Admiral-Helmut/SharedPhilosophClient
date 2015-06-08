@@ -131,7 +131,7 @@ public class RestoreClient {
         }
         for(Philosopher philosopher : ClientServiceImpl.getPhilosophers()) {
             if(philosopher.isActive()){
-                activePhilosophers[philosopher.getIdent()] =  true;
+                activePhilosophers[philosopher.getIdent()-1] =  true;
             }
         }
         for(int i = 0; i < activePhilosophers.length; i++) {
@@ -144,6 +144,8 @@ public class RestoreClient {
     private static void restoreAwakePhilosopher(int index) {
         Philosopher philosopher = ClientServiceImpl.getPhilosophers().get(index);
         philosopher.setActive(true);
+        philosopher.setNewSeat(null);
+        philosopher.setSeat(null);
         philosopher.setStatus(Status.MEDITATING);
         synchronized (philosopher.getMonitor()){
             philosopher.getMonitor().notifyAll();

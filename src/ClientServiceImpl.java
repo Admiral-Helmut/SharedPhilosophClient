@@ -262,7 +262,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         }
         for(Philosopher philosopher : philosophers) {
             if(philosopher.isActive()){
-                philosophersForRestoring[philosopher.getIdent()] =  true;
+                philosophersForRestoring[philosopher.getIdent()-1] =  true;
             }
         }
         return philosophersForRestoring;
