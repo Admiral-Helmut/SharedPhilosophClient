@@ -45,7 +45,7 @@ public class Philosopher extends Thread {
                     }
                 }
             }
-            while(active){
+            while(active && System.currentTimeMillis()<=endTime){
                 switch(status){
                     case MEDITATING:
                         doMeditating();
@@ -65,7 +65,6 @@ public class Philosopher extends Thread {
                         doSleeping();
                         status = Status.MEDITATING;
                         break;
-
                 }
             }
 
@@ -94,13 +93,7 @@ public class Philosopher extends Thread {
                 return true;
             }
             else{
-                if(mealsEaten == 0){
-                    System.out.println("1asd" + ident);
-                }
                 ClientServiceImpl.awakePhilosopherAddToQueueCall(ident, seatProposal.getSeatNumber(), seatProposal.getName(), mealsEaten);
-                if(mealsEaten == 0){
-                    System.out.println("1asd" + ident);
-                }
                 return false;
             }
         }

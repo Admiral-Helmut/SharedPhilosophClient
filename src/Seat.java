@@ -1,6 +1,7 @@
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.concurrent.SynchronousQueue;
 
 /**
  * VSS
@@ -11,7 +12,7 @@ public class Seat {
     private Fork leftFork;
     private Fork rightFork;
     private Philosopher philosopher;
-    private Queue<Philosopher> waitingPhilosophers = new LinkedList<>();
+    private SynchronousQueue<Philosopher> waitingPhilosophers = new SynchronousQueue<>();
     private Object monitor = new Object();
 
     public Seat(Fork leftFork) {
