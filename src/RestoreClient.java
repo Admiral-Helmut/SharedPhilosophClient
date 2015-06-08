@@ -113,10 +113,42 @@ public class RestoreClient {
             restoreInformAll();
             ClientServiceImpl.getNeighbourList().remove(leftneighbourLookupName);
             restoreShareSeats();
+            restorePhilosophers();
             restoreSetNewNeigbours();
             restoreFinishedInformAll();
         }
         lastRestorAttempt = System.currentTimeMillis();
+    }
+
+    private static void restorePhilosophers() {
+        boolean[] activePhilosophers = new boolean[RestoreClient.getAllPhilosopher()+RestoreClient.getAllHungryPhilosopher()];
+        if(!rightneighbourLookupName.equals(leftneighbourLookupName)){
+            try {
+                activePhilosophers = rightClient.restoreGetPhilosophersCount(leftneighbourLookupName);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        for(Philosopher philosopher : ClientServiceImpl.getPhilosophers()) {
+            if(philosopher.isActive()){
+                activePhilosophers[philosopher.getIdent()] =  true;
+            }
+        }
+        for(int i = 0; i < activePhilosophers.length; i++) {
+            if(!activePhilosophers[i]){
+                restoreAwakePhilosopher(i);
+            }
+        }
+    }
+
+    private static void restoreAwakePhilosopher(int index) {
+        Philosopher philosopher = ClientServiceImpl.getPhilosophers().get(index);
+        philosopher.setActive(true);
+        philosopher.setStatus(Status.MEDITATING);
+        synchronized (philosopher.getMonitor()){
+            philosopher.getMonitor().notifyAll();
+        }
+
     }
 
     private static void restoreShareSeats() {

@@ -251,6 +251,23 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         tablePart.restoreSeat();
     }
 
+    @Override
+    public boolean[] restoreGetPhilosophersCount(String lookupName) throws RemoteException {
+        boolean[] philosophersForRestoring;
+        if(!lookupName.equals(RestoreClient.getRightneighbourLookupName())) {
+            philosophersForRestoring = RestoreClient.getRightClient().restoreGetPhilosophersCount(lookupName);
+        }
+        else{
+            philosophersForRestoring = new boolean[RestoreClient.getAllPhilosopher()+RestoreClient.getAllHungryPhilosopher()];
+        }
+        for(Philosopher philosopher : philosophers) {
+            if(philosopher.isActive()){
+                philosophersForRestoring[philosopher.getIdent()] =  true;
+            }
+        }
+        return philosophersForRestoring;
+    }
+
     public void setMaster(MasterRemote master, String masterName){
         this.master = master;
         this.masterName = masterName;
@@ -357,6 +374,10 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    public static List<Philosopher> getPhilosophers() {
+        return philosophers;
     }
 }
 

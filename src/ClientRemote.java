@@ -43,4 +43,6 @@ public interface ClientRemote extends Remote {
     Map<String,Integer> getSeatsForRestoring(String leftneighbourLookupName) throws RemoteException;
 
     void restoreAddSeat() throws RemoteException;
+
+    boolean[] restoreGetPhilosophersCount(String lookupName) throws RemoteException;
 }
