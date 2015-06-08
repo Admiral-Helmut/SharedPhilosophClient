@@ -11,8 +11,8 @@ public class Main {
 
 
     public static String masterIP = "192.168.178.3";
-    public static String ownIP = "192.168.178.2";
-    public static String lookupName = "Client2";
+    public static String ownIP = "192.168.178.1";
+    public static String lookupName = "Client1";
 
 
     public static void main(String[] args){

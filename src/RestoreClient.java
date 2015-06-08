@@ -107,38 +107,10 @@ public class RestoreClient {
     }
 
     public static void startRestoring() {
-        restoreSetRightNeigbour();
-        restoreSetLeftNeigbour();
+        restoreSetNewNeigbours();
     }
 
-    private static void restoreSetLeftNeigbour() {
-        if(rightneighbourLookupName.equals(leftneighbourLookupName)) {
-            leftneighbourLookupName = Main.lookupName;
-            leftneighbourIP = Main.ownIP;
-        }
-        else {
-            try {
-                String[] newData = rightClient.restoreGetLookupNameAndIp(leftneighbourLookupName);
-                leftneighbourLookupName = newData[0];
-                leftneighbourIP = newData[1];
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-
-        }
-        try {
-            leftClient = (ClientRemote)Naming.lookup("rmi://"+leftneighbourIP+"/"+leftneighbourLookupName);
-        } catch (NotBoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private static void restoreSetRightNeigbour() {
+    private static void restoreSetNewNeigbours() {
         if(rightneighbourLookupName.equals(leftneighbourLookupName)) {
             rightneighbourLookupName = Main.lookupName;
             rightneighbourIP = Main.ownIP;
@@ -151,10 +123,39 @@ public class RestoreClient {
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+
+            leftneighbourLookupName = Main.lookupName;
+            leftneighbourIP = Main.ownIP;
+            try {
+                leftClient = (ClientRemote)Naming.lookup("rmi://"+leftneighbourIP+"/"+leftneighbourLookupName);
+            } catch (NotBoundException e) {
+                e.printStackTrace();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
         else {
             try {
                 rightClient.restoreSetRightNeigbour(leftneighbourLookupName, Main.lookupName, Main.ownIP);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                String[] newData = rightClient.restoreGetLookupNameAndIp(leftneighbourLookupName);
+                leftneighbourLookupName = newData[0];
+                leftneighbourIP = newData[1];
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            try {
+                leftClient = (ClientRemote)Naming.lookup("rmi://"+leftneighbourIP+"/"+leftneighbourLookupName);
+            } catch (NotBoundException e) {
+                e.printStackTrace();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
