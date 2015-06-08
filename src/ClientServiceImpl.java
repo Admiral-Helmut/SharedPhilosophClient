@@ -251,7 +251,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         try {
             rightNeighbor.updatePhilosophers(philosophersUpdate);
         } catch (RemoteException e) {
-            e.printStackTrace();
+            RestoreClient.startRestoring();
         }
     }
 
