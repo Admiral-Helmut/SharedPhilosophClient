@@ -19,6 +19,7 @@ public class Philosopher extends Thread {
     private Seat newSeat;
     private int mealsEaten;
     private long endTime;
+    private boolean exit = false;
 
     public Philosopher(int ident, boolean hungry, boolean active){
 
@@ -43,7 +44,7 @@ public class Philosopher extends Thread {
             e.printStackTrace();
         }
         endTime = RestoreClient.getEndTime();
-        while(System.currentTimeMillis()<=endTime){
+        while(System.currentTimeMillis()<=endTime && !exit){
             if(!active) {
                 synchronized (monitor) {
                     try {
@@ -293,5 +294,9 @@ public class Philosopher extends Thread {
 
     public boolean isHungry() {
         return hungry;
+    }
+
+    public void setExit(boolean exit) {
+        this.exit = exit;
     }
 }

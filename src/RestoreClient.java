@@ -168,6 +168,7 @@ public class RestoreClient {
             Philosopher p = new Philosopher(philosopher.getIdent(), philosopher.isHungry(), philosopher.getMealsEaten(), philosopher.isActive());
             philosophersForRestoring.add(p);
             philosopher.setActive(false);
+            philosopher.setExit(true);
         }
         for(Seat seat : TablePart.getTablePart().getSeats()) {
             seat.setWaitingPhilosophers(new ArrayBlockingQueue(RestoreClient.getAllHungryPhilosopher()+RestoreClient.getAllPhilosopher()));
