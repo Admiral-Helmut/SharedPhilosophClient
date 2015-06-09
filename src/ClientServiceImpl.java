@@ -292,7 +292,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     public static void updatePhilosophersForNeighborCall(List<Philosopher> philosophers){
-        if(restoringActive){
+        if(restoringActive || RestoreClient.getRightneighbourLookupName().equals(Main.lookupName)){
             return;
         }
         ClientRemote rightNeighbor = RestoreClient.getRightClient();
@@ -344,7 +344,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     public static void leftForkWaitCall() {
-        if(restoringActive){
+        if(restoringActive || RestoreClient.getLeftneighbourLookupName().equals(Main.lookupName)){
             return;
         }
         try {
@@ -371,14 +371,14 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     public static List<Integer> updateAverageCall(String lookupName) {
-        if(restoringActive){
+        if(restoringActive || RestoreClient.getLeftneighbourLookupName().equals(Main.lookupName)){
             return null;
         }
         try {
             return RestoreClient.getLeftClient().updateAverage(lookupName);
         } catch (RemoteException e) {
             RestoreClient.startRestoring();
-            System.out.println("vupdateAverageCall");
+            System.out.println("updateAverageCall");
         }
         return null;
     }
