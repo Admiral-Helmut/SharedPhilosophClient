@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -78,6 +79,9 @@ public class Overseer extends Thread {
 
 
                 List<Integer> averageList = ClientServiceImpl.updateAverageCall(Main.lookupName);
+                if(averageList == null) {
+                    averageList = new ArrayList<>();
+                }
 
                 long ownSum = 0;
                 int ownCount = 0;

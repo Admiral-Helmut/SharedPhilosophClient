@@ -352,11 +352,6 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             return RestoreClient.getLeftClient().updateAverage(lookupName);
         } catch (RemoteException e) {
             RestoreClient.startRestoring();
-            try {
-                return neighbourList.get(Main.lookupName).updateAverage(RestoreClient.getLeftneighbourLookupName());
-            } catch (RemoteException e1) {
-                e1.printStackTrace();
-            }
         }
         return null;
     }
