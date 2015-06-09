@@ -386,6 +386,17 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     public static void updateAverageCall() {
         if(restoringActive || RestoreClient.getLeftneighbourLookupName().equals(Main.lookupName)){
+            long sum = 0;
+            int count = 0;
+            for (Philosopher philosopher : philosophers) {
+                if(philosopher.isActive()) {
+                    sum += philosopher.getMealsEaten();
+                    count ++;
+                }
+            }
+
+            int average = ((int)(sum / count));
+            Overseer.setAverage(average);
             return;
         }
         //System.out.println("ASDASD");
