@@ -99,7 +99,7 @@ public class Overseer extends Thread {
         public void run() {
             while(System.currentTimeMillis() < endTime && !exit) {
                 try {
-                    sleep(RestoreClient.getMeditationTime()*5);
+                    sleep(RestoreClient.getMeditationTime()*3);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

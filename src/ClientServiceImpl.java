@@ -234,18 +234,20 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     public void restoreInformAll(String lookupNameLostClient) throws RemoteException {
         if(!lookupNameLostClient.equals(RestoreClient.getRightneighbourLookupName())){
             RestoreClient.getRightClient().restoreInformAll(lookupNameLostClient);
+            RestoreClient.copyPhilosophersAndRemove();
+            restoringActive = true;
         }
-        restoringActive = true;
     }
 
     @Override
     public void restoreFinishedInformAll(String lookupName) throws RemoteException {
         if(!lookupName.equals(RestoreClient.getRightneighbourLookupName())){
             RestoreClient.getRightClient().restoreFinishedInformAll(lookupName);
+            restoringActive = false;
+            overseer.reStartPunisher();
+            overseer.reStartUpdater();
+            RestoreClient.awakePhilosophers();
         }
-        restoringActive = false;
-        overseer.reStartPunisher();
-        overseer.reStartUpdater();
     }
 
     @Override
@@ -434,6 +436,10 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     public static List<Philosopher> getPhilosophers() {
         return philosophers;
+    }
+
+    public static void setPhilosophers(List<Philosopher> philosophers) {
+        ClientServiceImpl.philosophers = philosophers;
     }
 }
 

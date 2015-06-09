@@ -2,8 +2,11 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * VSS
@@ -159,6 +162,19 @@ public class RestoreClient {
         }
     }
 
+    public static void copyPhilosophersAndRemove() {
+        List<Philosopher> philosophersForRestoring = new ArrayList<>();
+        for(Philosopher philosopher : ClientServiceImpl.getPhilosophers()) {
+            Philosopher p = new Philosopher(philosopher.getIdent(), philosopher.isHungry(), philosopher.getMealsEaten(), philosopher.isActive());
+            philosophersForRestoring.add(p);
+            philosopher.setActive(false);
+        }
+        for(Seat seat : TablePart.getTablePart().getSeats()) {
+            seat.setWaitingPhilosophers(new ArrayBlockingQueue(RestoreClient.getAllHungryPhilosopher()+RestoreClient.getAllPhilosopher()));
+        }
+        ClientServiceImpl.setPhilosophers(philosophersForRestoring);
+    }
+
     private static void restoreAwakePhilosopher(int index) {
         Philosopher philosopher = ClientServiceImpl.getPhilosophers().get(index);
         philosopher.setActive(true);
@@ -209,6 +225,7 @@ public class RestoreClient {
 
     private static void restoreFinishedInformAll() {
         ClientServiceImpl.setRestoringActive(false);
+        awakePhilosophers();
         if(rightneighbourLookupName.equals(leftneighbourLookupName)){
             try {
                 rightClient.restoreFinishedInformAll(Main.lookupName);
@@ -218,8 +235,15 @@ public class RestoreClient {
         }
     }
 
+    public static void awakePhilosophers() {
+        for(Philosopher philosopher : ClientServiceImpl.getPhilosophers()){
+            philosopher.start();
+        }
+    }
+
     private static void restoreInformAll() {
         ClientServiceImpl.setRestoringActive(true);
+        copyPhilosophersAndRemove();
         if(!rightneighbourLookupName.equals(leftneighbourLookupName)){
             try {
                 rightClient.restoreInformAll(leftneighbourLookupName);

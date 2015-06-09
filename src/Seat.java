@@ -14,7 +14,7 @@ public class Seat {
     private Fork leftFork;
     private Fork rightFork;
     private Philosopher philosopher;
-    private final BlockingQueue<Philosopher> waitingPhilosophers = new ArrayBlockingQueue(RestoreClient.getAllHungryPhilosopher()+RestoreClient.getAllPhilosopher());
+    private BlockingQueue<Philosopher> waitingPhilosophers = new ArrayBlockingQueue(RestoreClient.getAllHungryPhilosopher()+RestoreClient.getAllPhilosopher());
     private Object monitor = new Object();
 
     public Seat(Fork leftFork) {
@@ -150,5 +150,9 @@ public class Seat {
 
     public void setLeftFork(Fork leftFork) {
         this.leftFork = leftFork;
+    }
+
+    public void setWaitingPhilosophers(BlockingQueue<Philosopher> waitingPhilosophers) {
+        this.waitingPhilosophers = waitingPhilosophers;
     }
 }

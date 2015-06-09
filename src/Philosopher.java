@@ -28,6 +28,14 @@ public class Philosopher extends Thread {
         this.status = Status.MEDITATING;
     }
 
+    public Philosopher(int ident, boolean hungry, int mealsEaten, boolean active) {
+        this.ident = ident;
+        this.hungry = hungry;
+        this.active = active;
+        this.status = Status.MEDITATING;
+        this.mealsEaten = mealsEaten;
+    }
+
     public void run(){
         try {
             Thread.sleep(1000);
@@ -281,5 +289,9 @@ public class Philosopher extends Thread {
 
     public Status getStatus() {
         return status;
+    }
+
+    public boolean isHungry() {
+        return hungry;
     }
 }
