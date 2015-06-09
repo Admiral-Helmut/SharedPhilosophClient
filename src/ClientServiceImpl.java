@@ -184,8 +184,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             averages.add((int)(sum / count));
         }
 
-        if(!lookupName.equals(RestoreClient.getRightneighbourLookupName())){
-            averages.addAll(RestoreClient.getRightClient().updateAverage(lookupName));
+        if(!lookupName.equals(RestoreClient.getLeftneighbourLookupName())){
+            averages.addAll(RestoreClient.getLeftClient().updateAverage(lookupName));
         }
         return averages;
     }
@@ -349,11 +349,16 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     public static List<Integer> updateAverageCall(String lookupName) {
         try {
-            return RestoreClient.getRightClient().updateAverage(lookupName);
+            return RestoreClient.getLeftClient().updateAverage(lookupName);
         } catch (RemoteException e) {
             RestoreClient.startRestoring();
-            return updateAverageCall(lookupName);
+            try {
+                return neighbourList.get(Main.lookupName).updateAverage(RestoreClient.getLeftneighbourLookupName());
+            } catch (RemoteException e1) {
+                e1.printStackTrace();
+            }
         }
+        return null;
     }
 
     public static HashMap<String, ClientRemote> getNeighbourList() {

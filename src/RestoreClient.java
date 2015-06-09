@@ -110,6 +110,7 @@ public class RestoreClient {
 
     public static synchronized void startRestoring() {
         if(System.currentTimeMillis() > lastRestorAttempt + 1000){
+            System.out.println("Due to client crash restoring was started.");
             restoreInformAll();
             ClientServiceImpl.getNeighbourList().remove(leftneighbourLookupName);
             restoreShareSeats();
