@@ -169,8 +169,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     @Override
-    public List<Integer> updateAverage(String lookupName) throws RemoteException {
-        List<Integer> averages = new ArrayList<>();
+    public void updateAverage(String lookupName, List<Integer> averages) throws RemoteException {
 
         long sum = 0;
         int count = 0;
@@ -184,10 +183,20 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             averages.add((int)(sum / count));
         }
 
-        if(!lookupName.equals(RestoreClient.getLeftneighbourLookupName())){
-            averages.addAll(RestoreClient.getLeftClient().updateAverage(lookupName));
+        if(lookupName.equals(Main.lookupName)){
+            int finalSum = 0;
+            int finalCount = 0;
+            for(int value : averages) {
+                finalSum += value;
+                finalCount ++;
+            }
+
+            int average = ((int)(finalSum / finalCount));
+            Overseer.setAverage(average);
         }
-        return averages;
+        else{
+            RestoreClient.getRightClient().updateAverage(lookupName, averages);
+        }
     }
 
     public void restoreSetRightNeigbour(String lookupNameLostClient, String newLookupName, String newIp) throws RemoteException {
@@ -305,9 +314,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         try {
             rightNeighbor.updatePhilosophers(philosophersUpdate);
         } catch (RemoteException e) {
-            RestoreClient.startRestoring();
+            System.out.println(RestoreClient.getRightneighbourLookupName() + ":" + Main.lookupName);
             System.out.println("updatePhilosophersForNeighborCall");
-
+            RestoreClient.startRestoring();
         }
     }
 
@@ -370,17 +379,19 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     }
 
-    public static List<Integer> updateAverageCall(String lookupName) {
+    public static void updateAverageCall() {
         if(restoringActive || RestoreClient.getLeftneighbourLookupName().equals(Main.lookupName)){
-            return null;
+            return;
         }
+        //System.out.println("ASDASD");
         try {
-            return RestoreClient.getLeftClient().updateAverage(lookupName);
+            List<Integer> averages = new ArrayList<Integer>();
+            RestoreClient.getRightClient().updateAverage(Main.lookupName, averages);
         } catch (RemoteException e) {
-            RestoreClient.startRestoring();
+            System.out.println(RestoreClient.getLeftneighbourLookupName() +":"+Main.lookupName);
             System.out.println("updateAverageCall");
+            RestoreClient.startRestoring();
         }
-        return null;
     }
 
     public static HashMap<String, ClientRemote> getNeighbourList() {

@@ -30,7 +30,7 @@ public interface ClientRemote extends Remote {
 
     void releaseLastFork() throws RemoteException;
 
-    List<Integer> updateAverage(String lookupName) throws RemoteException;
+    void updateAverage(String lookupName, List<Integer> averages) throws RemoteException;
 
     void restoreSetRightNeigbour(String lookupNameLostClient, String newLookupName, String newIp) throws RemoteException;
 

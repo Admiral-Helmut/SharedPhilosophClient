@@ -10,6 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Overseer extends Thread {
     private long endTime;
     private List<Philosopher> philosophers;
+    private static int average;
 
     public Overseer(List<Philosopher> philosophers) {
         this.philosophers = philosophers;
@@ -76,33 +77,9 @@ public class Overseer extends Thread {
                 if(RestoreClient.isDebugging()) {
                     System.out.println("Punisher starts punishing");
                 }
+                System.out.println("qwertz");
 
-
-                List<Integer> averageList = ClientServiceImpl.updateAverageCall(Main.lookupName);
-                if(averageList == null) {
-                    averageList = new ArrayList<>();
-                }
-
-                long ownSum = 0;
-                int ownCount = 0;
-                for (Philosopher philosopher : philosophers) {
-                    if(philosopher.isActive()) {
-                        ownSum += philosopher.getMealsEaten();
-                        ownCount ++;
-                    }
-                }
-                if(ownCount > 0) {
-                    averageList.add((int)(ownSum / ownCount));
-                }
-
-                long sum = 0;
-                long count = 0;
-                for(int value : averageList) {
-                    sum += value;
-                    count ++;
-                }
-
-                int average = ((int)(sum / count));
+                ClientServiceImpl.updateAverageCall();
 
                 for (Philosopher philosopher : philosophers) {
                     if(philosopher.isActive()) {
@@ -120,4 +97,11 @@ public class Overseer extends Thread {
         }
     }
 
+    public static int getAverage() {
+        return average;
+    }
+
+    public static void setAverage(int average) {
+        Overseer.average = average;
+    }
 }
