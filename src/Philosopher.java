@@ -54,7 +54,7 @@ public class Philosopher extends Thread {
                     }
                 }
             }
-            while(active && System.currentTimeMillis()<=endTime){
+            while(active && System.currentTimeMillis()<=endTime && !exit){
                 switch(status){
                     case MEDITATING:
                         doMeditating();
@@ -103,7 +103,7 @@ public class Philosopher extends Thread {
             }
             else{
                 if(!ClientServiceImpl.awakePhilosopherAddToQueueCall(ident, seatProposal.getSeatNumber(), seatProposal.getName(), mealsEaten)){
-                    SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();;
+                    SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
                     takeSeatWhenAvailable(TablePart.getTablePart().getSeat(ownSeatProposal.getSeatNumber()));
                     startEating();
                     return true;
