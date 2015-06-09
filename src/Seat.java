@@ -130,7 +130,12 @@ public class Seat {
         if (leftFork != null) {
             return leftFork.takeForkIfAvailable();
         } else {
-            return ClientServiceImpl.takeForkIfAvailableCall();
+            if(RestoreClient.getLeftneighbourLookupName().equals(Main.lookupName)) {
+                return TablePart.getTablePart().getSeat(TablePart.getTablePart().getSeats().size()-1).getRightFork().takeForkIfAvailable();
+            }
+            else{
+                return ClientServiceImpl.takeForkIfAvailableCall();
+            }
         }
     }
 
