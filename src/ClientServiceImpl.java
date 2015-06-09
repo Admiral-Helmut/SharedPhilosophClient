@@ -19,6 +19,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     String masterName;
     private static List<Philosopher> philosophers;
     private static boolean restoringActive = false;
+    Overseer overseer;
 
     TablePart tablePart = null;
     protected ClientServiceImpl() throws RemoteException {
@@ -84,7 +85,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             Philosopher p = new Philosopher((i+1+RestoreClient.getAllPhilosopher()),true, b);
             philosophers.add(p);
         }
-        Overseer overseer = new Overseer(philosophers);
+        overseer = new Overseer(philosophers);
 
         while (System.currentTimeMillis() < startTime ) {
             try {
@@ -243,6 +244,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             RestoreClient.getRightClient().restoreFinishedInformAll(lookupName);
         }
         restoringActive = false;
+        overseer.reStartPunisher();
+        overseer.reStartUpdater();
     }
 
     @Override

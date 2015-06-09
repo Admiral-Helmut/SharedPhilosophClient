@@ -1,3 +1,5 @@
+import com.oracle.deploy.update.Updater;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,7 +13,8 @@ public class Overseer extends Thread {
     private long endTime;
     private List<Philosopher> philosophers;
     private static int average;
-
+    private Punisher punisher;
+    private PhilosoperUpdater updater;
     public Overseer(List<Philosopher> philosophers) {
         this.philosophers = philosophers;
     }
@@ -23,15 +26,35 @@ public class Overseer extends Thread {
             e.printStackTrace();
         }
         endTime = RestoreClient.getEndTime();
-        new PhilosoperUpdater().start();
-        new Punisher().start();
-        new RMIistdoofThread().start();
+        startPunisher();
+        startUpdater();
+        new DisplayOutput().start();
         while(System.currentTimeMillis() < endTime) {
             //TODO: Overseer stuff
         }
     }
 
-    private class RMIistdoofThread extends Thread {
+    public void reStartPunisher() {
+        punisher.setExit(true);
+        startPunisher();
+    }
+
+    public void reStartUpdater() {
+        updater.setExit(true);
+        startUpdater();
+    }
+
+    private void startPunisher() {
+        punisher = new Punisher();
+        punisher.start();
+    }
+
+    private void startUpdater() {
+        updater = new PhilosoperUpdater();
+        updater.start();
+    }
+
+    private class DisplayOutput extends Thread {
         public void run() {
             while(System.currentTimeMillis() < endTime) {
                 try {
@@ -48,13 +71,15 @@ public class Overseer extends Thread {
                 System.out.println("\n");
             }
         }
+
     }
 
 
 
     private class PhilosoperUpdater extends Thread {
+        private boolean exit = false;
         public void run() {
-            while(System.currentTimeMillis() < endTime) {
+            while(System.currentTimeMillis() < endTime && !exit) {
                 try {
                     sleep(RestoreClient.getMeditationTime()*5);
                 } catch (InterruptedException e) {
@@ -63,11 +88,16 @@ public class Overseer extends Thread {
                 ClientServiceImpl.updatePhilosophersForNeighborCall(philosophers);
             }
         }
+
+        public void setExit(boolean exit) {
+            this.exit = exit;
+        }
     }
 
     private class Punisher extends Thread {
+        private boolean exit = false;
         public void run() {
-            while(System.currentTimeMillis() < endTime) {
+            while(System.currentTimeMillis() < endTime && !exit) {
                 try {
                     sleep(RestoreClient.getMeditationTime()*5);
                 } catch (InterruptedException e) {
@@ -77,23 +107,26 @@ public class Overseer extends Thread {
                 if(RestoreClient.isDebugging()) {
                     System.out.println("Punisher starts punishing");
                 }
-                System.out.println("qwertz");
 
                 ClientServiceImpl.updateAverageCall();
-
-                for (Philosopher philosopher : philosophers) {
-                    if(philosopher.isActive()) {
-                        if(!philosopher.isPunished() && philosopher.getMealsEaten() > average + 20) {
-                            if(RestoreClient.isDebugging()) {
-                                System.out.println("Philosopher " + philosopher.getIdent() + " got punished because he eat "
-                                + philosopher.getMealsEaten() + " which is more then average of " + average + "!");
+                if(!exit){
+                    for (Philosopher philosopher : philosophers) {
+                        if(philosopher.isActive()) {
+                            if(!philosopher.isPunished() && philosopher.getMealsEaten() > average + 20) {
+                                if(RestoreClient.isDebugging()) {
+                                    System.out.println("Philosopher " + philosopher.getIdent() + " got punished because he eat "
+                                            + philosopher.getMealsEaten() + " which is more then average of " + average + "!");
+                                }
+                                philosopher.setPunished(true);
                             }
-                            philosopher.setPunished(true);
                         }
                     }
                 }
-
             }
+        }
+
+        public void setExit(boolean exit) {
+            this.exit = exit;
         }
     }
 
