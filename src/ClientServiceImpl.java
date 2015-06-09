@@ -306,6 +306,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             rightNeighbor.updatePhilosophers(philosophersUpdate);
         } catch (RemoteException e) {
             RestoreClient.startRestoring();
+            System.out.println("updatePhilosophersForNeighborCall");
+
         }
     }
 
@@ -317,6 +319,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             return RestoreClient.getLeftClient().takeForkIfAvailable();
         } catch (RemoteException e) {
             RestoreClient.startRestoring();
+            System.out.println("takeForkIfAvailableCall");
         }
         return false;
     }
@@ -335,6 +338,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             }
         } catch (RemoteException e) {
             RestoreClient.startRestoring();
+            System.out.println("awakePhilosopherAddToQueueCall");
         }
         return false;
     }
@@ -347,6 +351,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             RestoreClient.getLeftClient().lastForkWait();
         } catch (RemoteException e) {
             RestoreClient.startRestoring();
+            System.out.println("leftForkWaitCall");
+
         }
     }
 
@@ -358,6 +364,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             RestoreClient.getLeftClient().releaseLastFork();
         } catch (RemoteException e) {
             RestoreClient.startRestoring();
+            System.out.println("notifyReleaseLeftForkCall");
+
         }
 
     }
@@ -370,6 +378,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             return RestoreClient.getLeftClient().updateAverage(lookupName);
         } catch (RemoteException e) {
             RestoreClient.startRestoring();
+            System.out.println("vupdateAverageCall");
         }
         return null;
     }

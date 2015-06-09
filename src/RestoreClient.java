@@ -118,6 +118,9 @@ public class RestoreClient {
             restoreSetNewNeigbours();
             restoreFinishedInformAll();
             System.out.println("Restoring finished.");
+            System.out.println(getRightneighbourLookupName());
+            System.out.println(getLeftneighbourLookupName());
+            System.out.println(ClientServiceImpl.getNeighbourList().size());
         }
         lastRestorAttempt = System.currentTimeMillis();
     }
