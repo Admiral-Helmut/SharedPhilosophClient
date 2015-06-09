@@ -292,6 +292,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     public static void updatePhilosophersForNeighborCall(List<Philosopher> philosophers){
+        if(restoringActive){
+            return;
+        }
         ClientRemote rightNeighbor = RestoreClient.getRightClient();
         HashMap<Integer, Integer> philosophersUpdate = new HashMap<>();
         for(Philosopher philosopher : philosophers) {
@@ -307,6 +310,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     public static boolean takeForkIfAvailableCall() {
+        if(restoringActive){
+            return false;
+        }
         try {
             return RestoreClient.getLeftClient().takeForkIfAvailable();
         } catch (RemoteException e) {
@@ -316,6 +322,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     public static boolean awakePhilosopherAddToQueueCall(int philosopherId, int seatNumber, String name, int mealsEaten) {
+        if(restoringActive){
+            return false;
+        }
         try {
             if(neighbourList.containsKey(name)){
                 neighbourList.get(name).awakePhilosopherAddToQueue(philosopherId, seatNumber, mealsEaten);
@@ -331,6 +340,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     public static void leftForkWaitCall() {
+        if(restoringActive){
+            return;
+        }
         try {
             RestoreClient.getLeftClient().lastForkWait();
         } catch (RemoteException e) {
@@ -339,6 +351,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     public static void notifyReleaseLeftForkCall() {
+        if(restoringActive){
+            return;
+        }
         try {
             RestoreClient.getLeftClient().releaseLastFork();
         } catch (RemoteException e) {
@@ -348,6 +363,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     public static List<Integer> updateAverageCall(String lookupName) {
+        if(restoringActive){
+            return null;
+        }
         try {
             return RestoreClient.getLeftClient().updateAverage(lookupName);
         } catch (RemoteException e) {

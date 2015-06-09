@@ -117,6 +117,7 @@ public class RestoreClient {
             restorePhilosophers();
             restoreSetNewNeigbours();
             restoreFinishedInformAll();
+            System.out.println("Restoring finished.");
         }
         lastRestorAttempt = System.currentTimeMillis();
     }
