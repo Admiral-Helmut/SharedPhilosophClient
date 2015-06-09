@@ -319,7 +319,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         } catch (RemoteException e) {
             System.out.println(RestoreClient.getRightneighbourLookupName() + ":" + Main.lookupName);
             System.out.println("updatePhilosophersForNeighborCall");
-            RestoreClient.startRestoring();
+            if(!RestoreClient.getLeftneighbourLookupName().equals(Main.lookupName)) {
+                RestoreClient.startRestoring();
+            }
         }
     }
 
@@ -391,9 +393,11 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             List<Integer> averages = new ArrayList<Integer>();
             RestoreClient.getLeftClient().updateAverage(Main.lookupName, averages);
         } catch (RemoteException e) {
-            System.out.println(RestoreClient.getLeftneighbourLookupName() +":"+Main.lookupName);
+            System.out.println(RestoreClient.getLeftneighbourLookupName() + ":" + Main.lookupName);
             System.out.println("updateAverageCall");
-            RestoreClient.startRestoring();
+            if(!RestoreClient.getLeftneighbourLookupName().equals(Main.lookupName)){
+                RestoreClient.startRestoring();
+            }
         }
     }
 
