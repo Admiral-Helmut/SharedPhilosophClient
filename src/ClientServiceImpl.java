@@ -19,7 +19,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     String masterName;
     private static List<Philosopher> philosophers;
     private static boolean restoringActive = false;
-    Overseer overseer;
+    private static Overseer overseer;
 
     TablePart tablePart = null;
     protected ClientServiceImpl() throws RemoteException {
@@ -440,6 +440,10 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     public static void setPhilosophers(List<Philosopher> philosophers) {
         ClientServiceImpl.philosophers = philosophers;
+    }
+
+    public static Overseer getOverseer() {
+        return overseer;
     }
 }
 

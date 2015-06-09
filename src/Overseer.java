@@ -15,7 +15,12 @@ public class Overseer extends Thread {
     private static int average;
     private Punisher punisher;
     private PhilosoperUpdater updater;
+
     public Overseer(List<Philosopher> philosophers) {
+        this.philosophers = philosophers;
+    }
+
+    public void setPhilosophers(List<Philosopher> philosophers) {
         this.philosophers = philosophers;
     }
 

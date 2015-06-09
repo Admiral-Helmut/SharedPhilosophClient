@@ -173,6 +173,7 @@ public class RestoreClient {
             seat.setWaitingPhilosophers(new ArrayBlockingQueue(RestoreClient.getAllHungryPhilosopher()+RestoreClient.getAllPhilosopher()));
         }
         ClientServiceImpl.setPhilosophers(philosophersForRestoring);
+        ClientServiceImpl.getOverseer().setPhilosophers(philosophersForRestoring);
     }
 
     private static void restoreAwakePhilosopher(int index) {
