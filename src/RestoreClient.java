@@ -31,6 +31,8 @@ public class RestoreClient {
 
     private static long lastRestorAttempt;
 
+    private static Object monitor = new Object();
+    private static boolean restoring = false;
 
     public RestoreClient(int allSeats, int allPhilosopher, int allHungryPhilosopher, int eatTime, int meditationTime, int sleepTime, int runTimeInSeconds, String leftneighbourIP, String leftneighbourLookupName, String rightneighbourIP, String rightneighbourLookupName, ClientRemote leftClient, ClientRemote rightClient, boolean debugging){
         RestoreClient.allSeats = allSeats;
@@ -108,8 +110,19 @@ public class RestoreClient {
         return rightClient;
     }
 
-    public static synchronized void startRestoring() {
-        if(System.currentTimeMillis() > lastRestorAttempt + 1000){
+    public static void startRestoring() {
+
+        boolean doRestoring = false;
+        synchronized(monitor) {
+            if(System.currentTimeMillis() < lastRestorAttempt + 1000) {
+                return;
+            }
+            if(!restoring){
+                doRestoring = true;
+            }
+            restoring = true;
+        }
+        if(doRestoring){
             System.out.println("Due to client crash restoring was started.");
             restoreInformAll();
             ClientServiceImpl.getNeighbourList().remove(leftneighbourLookupName);
@@ -121,8 +134,8 @@ public class RestoreClient {
             System.out.println(getRightneighbourLookupName());
             System.out.println(getLeftneighbourLookupName());
             System.out.println(ClientServiceImpl.getNeighbourList().size());
+            lastRestorAttempt = System.currentTimeMillis();
         }
-        lastRestorAttempt = System.currentTimeMillis();
     }
 
     private static void restorePhilosophers() {
