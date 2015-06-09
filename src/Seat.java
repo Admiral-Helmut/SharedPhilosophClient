@@ -121,7 +121,12 @@ public class Seat {
             leftFork.releaseFork();
         }
         else{
-            ClientServiceImpl.notifyReleaseLeftForkCall();
+            if(RestoreClient.getLeftneighbourLookupName().equals(Main.lookupName)) {
+                TablePart.getTablePart().getSeat(TablePart.getTablePart().getSeats().size()-1).getRightFork().releaseFork();
+            }
+            else {
+                ClientServiceImpl.notifyReleaseLeftForkCall();
+            }
         }
     }
 
