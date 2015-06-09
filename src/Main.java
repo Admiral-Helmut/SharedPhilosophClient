@@ -11,13 +11,18 @@ public class Main {
 
 
     public static String masterIP = "192.168.178.3";
-    public static String ownIP = "192.168.178.1";
-    public static String lookupName = "Client1";
+    public static String ownIP = "192.168.178.2";
+    public static String lookupName = "Client2";
 
 
     public static void main(String[] args){
 
         System.setProperty("sun.rmi.transport.tcp.responseTimeout", "1000");
+        System.setProperty("sun.rmi.activation.execTimeout", "1000");
+        System.setProperty("sun.rmi.activation.groupTimeout", "1000");
+        System.setProperty("sun.rmi.dgc.ackTimeout", "1000");
+        System.setProperty("sun.rmi.transport.tcp.readTimeout", "1000");
+        System.setProperty("sun.rmi.transport.connectionTimeout", "1000");
 
         System.out.println("Start");
         if(args.length>1){
