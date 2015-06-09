@@ -106,12 +106,14 @@ public class Seat {
     public void removePhilosopher() {
         releaseLeftFork();
         getRightFork().releaseFork();
-        waitingPhilosophers.remove();
-        philosopher = waitingPhilosophers.peek();
-        if (philosopher != null) {
-            philosopher.setSeat(this);
-            synchronized (philosopher.getMonitor()) {
-                philosopher.getMonitor().notify();
+        if(waitingPhilosophers.size() > 0){
+            waitingPhilosophers.remove();
+            philosopher = waitingPhilosophers.peek();
+            if (philosopher != null) {
+                philosopher.setSeat(this);
+                synchronized (philosopher.getMonitor()) {
+                    philosopher.getMonitor().notify();
+                }
             }
         }
     }
