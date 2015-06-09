@@ -195,7 +195,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             Overseer.setAverage(average);
         }
         else{
-            RestoreClient.getRightClient().updateAverage(lookupName, averages);
+            RestoreClient.getLeftClient().updateAverage(lookupName, averages);
         }
     }
 
@@ -386,7 +386,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         //System.out.println("ASDASD");
         try {
             List<Integer> averages = new ArrayList<Integer>();
-            RestoreClient.getRightClient().updateAverage(Main.lookupName, averages);
+            RestoreClient.getLeftClient().updateAverage(Main.lookupName, averages);
         } catch (RemoteException e) {
             System.out.println(RestoreClient.getLeftneighbourLookupName() +":"+Main.lookupName);
             System.out.println("updateAverageCall");
