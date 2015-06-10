@@ -171,11 +171,17 @@ public class RestoreClient {
             philosopher.setExit(true);
         }
         for (Philosopher philosopher : ClientServiceImpl.getPhilosophers()){
-            philosopher.getMonitor().notifyAll();
+            synchronized (philosopher.getMonitor()) {
+                philosopher.getMonitor().notifyAll();
+            }
         }
         for (Seat seat : TablePart.getTablePart().getSeats()){
-            seat.getMonitor().notifyAll();
-            seat.getRightFork().notifyAll();
+            synchronized (seat.getMonitor()){
+                seat.getMonitor().notifyAll();
+            }
+            synchronized (seat.getRightFork().getMonitor()){
+                seat.getRightFork().getMonitor().notifyAll();
+            }
         }
         for(Seat seat : TablePart.getTablePart().getSeats()) {
             seat.setWaitingPhilosophers(new ArrayBlockingQueue(RestoreClient.getAllHungryPhilosopher()+RestoreClient.getAllPhilosopher()));
