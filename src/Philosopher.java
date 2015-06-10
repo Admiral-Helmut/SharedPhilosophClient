@@ -154,23 +154,31 @@ public class Philosopher extends Thread {
                 System.out.println("Philosopher " + ident + " got left fork and tries to get right fork.");
             }
             if (!exit && !seat.takeRightForkIfAvailable()) {
+                debug = Debug.STATE12;
                 seat.releaseLeftFork();
+                debug = Debug.STATE13;
 
                 // Fix problem of all philosopher starting to eat at same time
                 if (Math.random() > 0.9) {
                     try {
-                        sleep(1);
+                        debug = Debug.STATE14;
+                        Thread.sleep(10);
+                        debug = Debug.STATE15;
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
+                debug = Debug.STATE16;
                 if(RestoreClient.isDebugging()) {
                     System.out.println("Right Fork was not available, Philosopher " + ident + " released left fork.");
                 }
+                debug = Debug.STATE17;
             } else {
                 readyToEat = true;
             }
+            debug = Debug.STATE18;
         }
+        debug = Debug.STATE19;
 
         if(RestoreClient.isDebugging()) {
             System.out.println("Philosopher " + ident + " starts to eat.");
@@ -180,6 +188,7 @@ public class Philosopher extends Thread {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        debug = Debug.STATE20;
         mealsEaten++;
         seat.removePhilosopher();
         seat = null;
