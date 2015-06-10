@@ -20,6 +20,7 @@ public class Philosopher extends Thread {
     private int mealsEaten;
     private long endTime;
     private boolean exit = false;
+    private Debug debug;
 
     public Philosopher(int ident, boolean hungry, boolean active){
 
@@ -61,12 +62,15 @@ public class Philosopher extends Thread {
                         status = Status.EATING;
                         break;
                     case EATING:
+                        debug = Debug.STATE1;
                         if(newSeat != null) {
+                            debug = Debug.STATE2;
                             takeSeatWhenAvailable(newSeat);
                             startEating();
                             newSeat = null;
                         }
                         else{
+                            debug = Debug.STATE3;
                             active = tryToEat();
                         }
                         break;
@@ -118,6 +122,7 @@ public class Philosopher extends Thread {
         }
     }
     private void startEating(){
+        debug = Debug.STATE7;
 
         boolean readyToEat = false;
         while (!readyToEat) {
@@ -126,11 +131,14 @@ public class Philosopher extends Thread {
             }
             while (seat != null && !seat.takeLeftForkIfAvailable() && !exit) {
                 try {
+                    debug = Debug.STATE8;
                     if(seat.getLeftFork() == null) {
                         ClientServiceImpl.leftForkWaitCall();
                     }
                     else {
+                        debug = Debug.STATE9;
                         synchronized (seat.getLeftFork().getMonitor()){
+                            debug = Debug.STATE10;
                             seat.getLeftFork().getMonitor().wait();
                         }
                     }
@@ -138,6 +146,8 @@ public class Philosopher extends Thread {
                     e.printStackTrace();
                 }
             }
+            debug = Debug.STATE11;
+
             if(exit)
                 return;
             if(RestoreClient.isDebugging()) {
@@ -217,12 +227,17 @@ public class Philosopher extends Thread {
 
     private void takeSeatWhenAvailable(Seat seat) {
         this.seat = seat.getSeatWithSmallesQueue(this);
+        debug = Debug.STATE4;
 
         if(this.seat == null) {
             try {
+                debug = Debug.STATE5;
+
                 synchronized (monitor) {
+                    debug = Debug.STATE6;
                     monitor.wait();
                 }
+                debug = Debug.STATE7;
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -305,5 +320,9 @@ public class Philosopher extends Thread {
 
     public void setExit(boolean exit) {
         this.exit = exit;
+    }
+
+    public Debug getDebug() {
+        return debug;
     }
 }

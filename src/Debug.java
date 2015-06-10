@@ -1,0 +1,7 @@
+/**
+ * VSS
+ * Created by David on 10.06.2015.
+ */
+public enum Debug {
+    STATE1,STATE2,STATE3,STATE4,STATE5,STATE6,STATE7,STATE8,STATE9, STATE11, STATE10
+}

@@ -68,7 +68,7 @@ public class Overseer extends Thread {
                     e.printStackTrace();
                 }
                 for(Philosopher philosopher : philosophers) {
-                    System.out.println(philosopher.getIdent() + ":" + philosopher.getMealsEaten() + ":" + philosopher.getStatus() + ":" + philosopher.isActive() + ":" + philosopher.isPunished());
+                    System.out.println(philosopher.getIdent() + ":" + philosopher.getMealsEaten() + ":" + philosopher.getStatus() + ":" + philosopher.isActive() + ":" + philosopher.isPunished() + ":"+ philosopher.getDebug());
                 }
                 for(Seat seat : TablePart.getTablePart().getSeats()){
                     System.out.print(seat.getQueueSize() + "-");
