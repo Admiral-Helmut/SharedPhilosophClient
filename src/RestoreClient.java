@@ -1,3 +1,5 @@
+import javafx.scene.control.Tab;
+
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -137,6 +139,10 @@ public class RestoreClient {
             System.out.println(getRightneighbourLookupName());
             System.out.println(getLeftneighbourLookupName());
             System.out.println(ClientServiceImpl.getNeighbourList().size());
+            for (Seat seat : TablePart.getTablePart().getSeats()){
+                System.out.print(seat.getQueueSize() + "-");
+            }
+            System.out.println();
             lastRestorAttempt = System.currentTimeMillis();
         }
     }
@@ -170,10 +176,10 @@ public class RestoreClient {
             philosopher.setActive(false);
             philosopher.setExit(true);
         }
-        for (Philosopher philosopher : ClientServiceImpl.getPhilosophers()){
-            //synchronized (philosopher.getMonitor()) {
-                //philosopher.getMonitor().notifyAll();
-            //}
+        /*for (Philosopher philosopher : ClientServiceImpl.getPhilosophers()){
+            synchronized (philosopher.getMonitor()) {
+                philosopher.getMonitor().notifyAll();
+            }
         }
         for (Seat seat : TablePart.getTablePart().getSeats()){
             synchronized (seat.getMonitor()){
@@ -182,7 +188,7 @@ public class RestoreClient {
             synchronized (seat.getRightFork().getMonitor()){
                 seat.getRightFork().getMonitor().notifyAll();
             }
-        }
+        }*/
         for(Seat seat : TablePart.getTablePart().getSeats()) {
             seat.setWaitingPhilosophers(new ArrayBlockingQueue(RestoreClient.getAllHungryPhilosopher()+RestoreClient.getAllPhilosopher()));
         }
