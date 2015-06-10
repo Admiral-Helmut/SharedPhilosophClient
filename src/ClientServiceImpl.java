@@ -366,9 +366,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         try {
             RestoreClient.getLeftClient().lastForkWait();
         } catch (RemoteException e) {
-            RestoreClient.startRestoring();
             System.out.println("leftForkWaitCall");
-
+            RestoreClient.startRestoring();
         }
     }
 
@@ -379,8 +378,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         try {
             RestoreClient.getLeftClient().releaseLastFork();
         } catch (RemoteException e) {
-            RestoreClient.startRestoring();
             System.out.println("notifyReleaseLeftForkCall");
+            RestoreClient.startRestoring();
 
         }
 
