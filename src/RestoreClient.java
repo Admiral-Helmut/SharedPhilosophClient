@@ -179,6 +179,7 @@ public class RestoreClient {
         for(Seat seat : TablePart.getTablePart().getSeats()) {
             seat.setWaitingPhilosophers(new ArrayBlockingQueue(RestoreClient.getAllHungryPhilosopher()+RestoreClient.getAllPhilosopher()));
             seat.setPhilosopher(null);
+            seat.getRightFork().setAvailable(true);
         }
         ClientServiceImpl.setPhilosophers(philosophersForRestoring);
         ClientServiceImpl.getOverseer().setPhilosophers(philosophersForRestoring);

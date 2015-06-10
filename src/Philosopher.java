@@ -153,7 +153,7 @@ public class Philosopher extends Thread {
             if(RestoreClient.isDebugging()) {
                 System.out.println("Philosopher " + ident + " got left fork and tries to get right fork.");
             }
-            if (!seat.takeRightForkIfAvailable()) {
+            if (!exit && !seat.takeRightForkIfAvailable()) {
                 seat.releaseLeftFork();
 
                 // Fix problem of all philosopher starting to eat at same time
