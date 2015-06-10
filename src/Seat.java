@@ -163,4 +163,8 @@ public class Seat {
     public Object getMonitor() {
         return monitor;
     }
+
+    public void setPhilosopher(Philosopher philosopher) {
+        this.philosopher = philosopher;
+    }
 }

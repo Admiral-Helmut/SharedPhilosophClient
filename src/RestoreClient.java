@@ -176,21 +176,9 @@ public class RestoreClient {
             philosopher.setActive(false);
             philosopher.setExit(true);
         }
-        /*for (Philosopher philosopher : ClientServiceImpl.getPhilosophers()){
-            synchronized (philosopher.getMonitor()) {
-                philosopher.getMonitor().notifyAll();
-            }
-        }
-        for (Seat seat : TablePart.getTablePart().getSeats()){
-            synchronized (seat.getMonitor()){
-                seat.getMonitor().notifyAll();
-            }
-            synchronized (seat.getRightFork().getMonitor()){
-                seat.getRightFork().getMonitor().notifyAll();
-            }
-        }*/
         for(Seat seat : TablePart.getTablePart().getSeats()) {
             seat.setWaitingPhilosophers(new ArrayBlockingQueue(RestoreClient.getAllHungryPhilosopher()+RestoreClient.getAllPhilosopher()));
+            seat.setPhilosopher(null);
         }
         ClientServiceImpl.setPhilosophers(philosophersForRestoring);
         ClientServiceImpl.getOverseer().setPhilosophers(philosophersForRestoring);
