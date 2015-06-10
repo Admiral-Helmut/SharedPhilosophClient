@@ -98,17 +98,19 @@ public class Philosopher extends Thread {
         }else {
             SeatProposal seatProposal = searchSeat();
             if(seatProposal.getName().equals(Main.lookupName)) {
-                takeSeatWhenAvailable(TablePart.getTablePart().getSeat(seatProposal.getSeatNumber()));
-                if(!exit)
+                if(!exit){
+                    takeSeatWhenAvailable(TablePart.getTablePart().getSeat(seatProposal.getSeatNumber()));
                     startEating();
+                }
                 return true;
             }
             else{
                 if(!ClientServiceImpl.awakePhilosopherAddToQueueCall(ident, seatProposal.getSeatNumber(), seatProposal.getName(), mealsEaten)){
-                    SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
-                    takeSeatWhenAvailable(TablePart.getTablePart().getSeat(ownSeatProposal.getSeatNumber()));
-                    if(!exit)
+                    if(!exit){
                         startEating();
+                        SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
+                        takeSeatWhenAvailable(TablePart.getTablePart().getSeat(ownSeatProposal.getSeatNumber()));
+                    }
                     return true;
                 }
                 return false;

@@ -171,9 +171,9 @@ public class RestoreClient {
             philosopher.setExit(true);
         }
         for (Philosopher philosopher : ClientServiceImpl.getPhilosophers()){
-            synchronized (philosopher.getMonitor()) {
-                philosopher.getMonitor().notifyAll();
-            }
+            //synchronized (philosopher.getMonitor()) {
+                //philosopher.getMonitor().notifyAll();
+            //}
         }
         for (Seat seat : TablePart.getTablePart().getSeats()){
             synchronized (seat.getMonitor()){
