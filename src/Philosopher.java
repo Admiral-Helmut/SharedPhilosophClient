@@ -99,14 +99,16 @@ public class Philosopher extends Thread {
             SeatProposal seatProposal = searchSeat();
             if(seatProposal.getName().equals(Main.lookupName)) {
                 takeSeatWhenAvailable(TablePart.getTablePart().getSeat(seatProposal.getSeatNumber()));
-                startEating();
+                if(!exit)
+                    startEating();
                 return true;
             }
             else{
                 if(!ClientServiceImpl.awakePhilosopherAddToQueueCall(ident, seatProposal.getSeatNumber(), seatProposal.getName(), mealsEaten)){
                     SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
                     takeSeatWhenAvailable(TablePart.getTablePart().getSeat(ownSeatProposal.getSeatNumber()));
-                    startEating();
+                    if(!exit)
+                        startEating();
                     return true;
                 }
                 return false;
@@ -134,6 +136,8 @@ public class Philosopher extends Thread {
                     e.printStackTrace();
                 }
             }
+            if(exit)
+                return;
             if(RestoreClient.isDebugging()) {
                 System.out.println("Philosopher " + ident + " got left fork and tries to get right fork.");
             }

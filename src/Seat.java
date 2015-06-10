@@ -157,4 +157,8 @@ public class Seat {
     public void setWaitingPhilosophers(BlockingQueue<Philosopher> waitingPhilosophers) {
         this.waitingPhilosophers = waitingPhilosophers;
     }
+
+    public Object getMonitor() {
+        return monitor;
+    }
 }

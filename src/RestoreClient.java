@@ -170,6 +170,13 @@ public class RestoreClient {
             philosopher.setActive(false);
             philosopher.setExit(true);
         }
+        for (Philosopher philosopher : ClientServiceImpl.getPhilosophers()){
+            philosopher.getMonitor().notifyAll();
+        }
+        for (Seat seat : TablePart.getTablePart().getSeats()){
+            seat.getMonitor().notifyAll();
+            seat.getRightFork().notifyAll();
+        }
         for(Seat seat : TablePart.getTablePart().getSeats()) {
             seat.setWaitingPhilosophers(new ArrayBlockingQueue(RestoreClient.getAllHungryPhilosopher()+RestoreClient.getAllPhilosopher()));
         }
