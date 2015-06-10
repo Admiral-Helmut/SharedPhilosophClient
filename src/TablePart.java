@@ -38,6 +38,9 @@ public class TablePart {
 
         for(int seatCounter = 0; seatCounter < tableSize; seatCounter++) {
             int currentQueueSize = getQueueSizeForSeat(indices.get(seatCounter));
+            if(currentQueueSize == 0){
+                return new SeatProposal(indices.get(seatCounter), currentQueueSize, Main.lookupName, Main.ownIP);
+            }
             if(currentQueueSize <= currentSmallestQueueSize) {
                 currentSmallestQueueSize = currentQueueSize;
                 currentSmallestQueueSeat = indices.get(seatCounter);

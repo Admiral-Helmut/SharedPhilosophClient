@@ -223,31 +223,29 @@ public class Philosopher extends Thread {
         if(RestoreClient.isDebugging()) {
             System.out.println("Philosopher " + ident + " tries to find seat.");
         }
-        try {
-            SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
+        SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
 
-            SeatProposal currentBestSeatProposal;
-            if(ClientServiceImpl.isRestoringActive()){
-                currentBestSeatProposal = ownSeatProposal;
-            }
-            else {
-                currentBestSeatProposal = RestoreClient.getLeftClient().searchSeat(Main.lookupName, ident);
-            }
-
-            if(currentBestSeatProposal.isBetterThen(ownSeatProposal)) {
-                if(RestoreClient.isDebugging()) {
-                    System.out.println("Philosopher " + ident + " found seat on other table, it was better: "+currentBestSeatProposal.getWaitingPhilosophersCount()+"-"+ownSeatProposal.getWaitingPhilosophersCount());
-                }
-
-                return currentBestSeatProposal;
-            }
-
+        if(ownSeatProposal.getWaitingPhilosophersCount() == 0){
             return ownSeatProposal;
-
-        } catch (RemoteException e) {
-            RestoreClient.startRestoring();
         }
-        return new SeatProposal(-1, -1, "", "");
+
+        SeatProposal currentBestSeatProposal;
+        if(ClientServiceImpl.isRestoringActive()){
+            currentBestSeatProposal = ownSeatProposal;
+        }
+        else {
+            currentBestSeatProposal = ClientServiceImpl.getBestExternalProposal();
+        }
+
+        if(currentBestSeatProposal.isBetterThen(ownSeatProposal)) {
+            if(RestoreClient.isDebugging()) {
+                System.out.println("Philosopher " + ident + " found seat on other table, it was better: "+currentBestSeatProposal.getWaitingPhilosophersCount()+"-"+ownSeatProposal.getWaitingPhilosophersCount());
+            }
+
+            return currentBestSeatProposal;
+        }
+
+        return ownSeatProposal;
     }
 
     private void takeSeatWhenAvailable(Seat seat) {

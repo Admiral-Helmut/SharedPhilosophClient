@@ -18,7 +18,7 @@ public interface ClientRemote extends Remote {
                            String leftneighbourLookupName , String rightneighbourIP,
                            String rightneighbourLookupName, boolean debugging, long startTime) throws RemoteException;
 
-    SeatProposal searchSeat(String startingClientName, int ident) throws RemoteException;
+    SeatProposal searchSeat() throws RemoteException;
 
     void updatePhilosophers(HashMap<Integer, Integer> philsophersUpdate) throws RemoteException;
 

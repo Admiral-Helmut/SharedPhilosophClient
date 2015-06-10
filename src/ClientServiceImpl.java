@@ -101,20 +101,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         overseer.start();
     }
 
-    public SeatProposal searchSeat(String startingClientName, int ident) throws RemoteException {
-        SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
-        if(ownSeatProposal.getWaitingPhilosophersCount() == 0){
-            return ownSeatProposal;
-        }
-        SeatProposal currentBestSeatProposal = null;
-        if (! startingClientName.equals(RestoreClient.getLeftneighbourLookupName())) {
-            currentBestSeatProposal = RestoreClient.getLeftClient().searchSeat(startingClientName, ident);
-        }
-
-        if(currentBestSeatProposal != null && currentBestSeatProposal.isBetterThen(ownSeatProposal)) {
-            return currentBestSeatProposal;
-        }
-        return ownSeatProposal;
+    public SeatProposal searchSeat() throws RemoteException {
+        return TablePart.getTablePart().getBestProposalForCurrentTable();
     }
 
     @Override
@@ -445,6 +433,29 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     public static Overseer getOverseer() {
         return overseer;
+    }
+
+    public static SeatProposal getBestExternalProposal() {
+        SeatProposal bestSeatProposal = null;
+        for(Map.Entry<String, ClientRemote> entry : neighbourList.entrySet()){
+            if(!entry.getKey().equals(Main.lookupName)){
+                SeatProposal currentSeatProposal = null;
+                try {
+                    currentSeatProposal = entry.getValue().searchSeat();
+                } catch (RemoteException e) {
+                    RestoreClient.startRestoring();
+                }
+                if(currentSeatProposal.getWaitingPhilosophersCount() == 0){
+                    return currentSeatProposal;
+                }
+                if(currentSeatProposal != null){
+                    if(bestSeatProposal == null || currentSeatProposal.isBetterThen(bestSeatProposal)){
+                        bestSeatProposal = currentSeatProposal;
+                    }
+                }
+            }
+        }
+        return bestSeatProposal;
     }
 }
 
