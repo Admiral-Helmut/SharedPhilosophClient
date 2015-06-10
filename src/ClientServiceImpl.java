@@ -102,12 +102,14 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     public SeatProposal searchSeat(String startingClientName, int ident) throws RemoteException {
+        SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
+        if(ownSeatProposal.getWaitingPhilosophersCount() == 0){
+            return ownSeatProposal;
+        }
         SeatProposal currentBestSeatProposal = null;
         if (! startingClientName.equals(RestoreClient.getLeftneighbourLookupName())) {
-            Philosopher philosopher = philosophers.get(ident-1);
             currentBestSeatProposal = RestoreClient.getLeftClient().searchSeat(startingClientName, ident);
         }
-        SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
 
         if(currentBestSeatProposal != null && currentBestSeatProposal.isBetterThen(ownSeatProposal)) {
             return currentBestSeatProposal;

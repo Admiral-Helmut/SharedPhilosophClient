@@ -100,27 +100,43 @@ public class Philosopher extends Thread {
             setPunished(false);
             return true;
         }else {
-            SeatProposal seatProposal = searchSeat();
-            if(seatProposal.getName().equals(Main.lookupName)) {
-                if(!exit){
-                    takeSeatWhenAvailable(TablePart.getTablePart().getSeat(seatProposal.getSeatNumber()));
-                    startEating();
-                }
+            if(tryToGetLocalSeat()){
                 return true;
-            }
-            else{
-                if(!ClientServiceImpl.awakePhilosopherAddToQueueCall(ident, seatProposal.getSeatNumber(), seatProposal.getName(), mealsEaten)){
+            }else{
+                SeatProposal seatProposal = searchSeat();
+                if(seatProposal.getName().equals(Main.lookupName)) {
                     if(!exit){
+                        takeSeatWhenAvailable(TablePart.getTablePart().getSeat(seatProposal.getSeatNumber()));
                         startEating();
-                        SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
-                        takeSeatWhenAvailable(TablePart.getTablePart().getSeat(ownSeatProposal.getSeatNumber()));
                     }
                     return true;
                 }
-                return false;
+                else{
+                    if(!ClientServiceImpl.awakePhilosopherAddToQueueCall(ident, seatProposal.getSeatNumber(), seatProposal.getName(), mealsEaten)){
+                        if(!exit){
+                            SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
+                            takeSeatWhenAvailable(TablePart.getTablePart().getSeat(ownSeatProposal.getSeatNumber()));
+                            startEating();
+                        }
+                        return true;
+                    }
+                    return false;
+                }
             }
         }
     }
+
+    private boolean tryToGetLocalSeat() {
+        for (Seat seat : TablePart.getTablePart().getSeats()){
+            if(seat.getQueueSize() == 0) {
+                takeSeatWhenAvailable(seat);
+                startEating();
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void startEating(){
         debug = Debug.STATE7;
 
