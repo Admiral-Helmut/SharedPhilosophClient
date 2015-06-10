@@ -122,7 +122,7 @@ public class Philosopher extends Thread {
             if(RestoreClient.isDebugging()) {
                 System.out.println("Philosopher " + ident + " tries to get left fork.");
             }
-            while (!seat.takeLeftForkIfAvailable()) {
+            while (!seat.takeLeftForkIfAvailable() || !exit) {
                 try {
                     if(seat.getLeftFork() == null) {
                         ClientServiceImpl.leftForkWaitCall();
