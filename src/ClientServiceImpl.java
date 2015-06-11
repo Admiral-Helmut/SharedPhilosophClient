@@ -21,7 +21,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     private static boolean restoringActive = false;
     private static Overseer overseer;
     private final static boolean debug = true;
-
+    private static SeatProposal pushedSeatProposal;
+    private static Object monitor = new Object();
     TablePart tablePart = null;
     protected ClientServiceImpl() throws RemoteException {
 
@@ -100,8 +101,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         overseer.start();
     }
 
-    public SeatProposal searchSeat() throws RemoteException {
-        return TablePart.getTablePart().getBestProposalForCurrentTable();
+    public void searchSeat(String lookupName) throws RemoteException {
+        SeatProposal seatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
+        neighbourList.get(lookupName).notifySetProposal(seatProposal);
     }
 
     @Override
@@ -280,6 +282,14 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         }
     }
 
+    @Override
+    public void notifySetProposal(SeatProposal seatProposal) throws RemoteException {
+        pushedSeatProposal = seatProposal;
+        synchronized (monitor){
+            monitor.notify();
+        }
+    }
+
     public void setMaster(MasterRemote master, String masterName){
         this.master = master;
         this.masterName = masterName;
@@ -455,10 +465,23 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             if(!entry.getKey().equals(Main.lookupName)){
                 SeatProposal currentSeatProposal = null;
                 try {
-                    currentSeatProposal = entry.getValue().searchSeat();
+                    entry.getValue().searchSeat(Main.lookupName);
+                    long startTime = System.currentTimeMillis();
+                    try {
+                        monitor.wait(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if(System.currentTimeMillis() - startTime > 80){
+                        if(debug)
+                            System.out.println("Restoring started due to timeout when waiting for seat");
+                        RestoreClient.startRestoring();
+                    }
+                    currentSeatProposal = pushedSeatProposal;
+
                 } catch (RemoteException e) {
                     if(debug)
-                        System.out.println("getbestexternalpropsoal");
+                        System.out.println("getBestExternalProposal");
                     RestoreClient.startRestoring();
                 }
                 if(currentSeatProposal.getWaitingPhilosophersCount() == 0){
