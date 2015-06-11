@@ -276,6 +276,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     public void notifyForkAvailable(boolean a) throws RemoteException {
         Philosopher philosopher = tablePart.getSeats().get(0).getPhilosopher();
         philosopher.setGotForkRemote(true);
+        System.out.println(System.currentTimeMillis());
         synchronized (philosopher.getMonitor()){
             philosopher.getMonitor().notify();
         }

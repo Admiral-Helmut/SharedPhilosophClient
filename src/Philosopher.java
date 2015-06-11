@@ -171,7 +171,12 @@ public class Philosopher extends Thread {
                     }
                 }
                 else{
-                    seat.takeLeftForkIfAvailable();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            seat.takeLeftForkIfAvailable();
+                        }
+                    }).start();
                     long time = System.currentTimeMillis();
                     try {
                         synchronized (monitor){
@@ -379,6 +384,7 @@ public class Philosopher extends Thread {
     }
 
     public void setGotForkRemote(boolean gotFork) {
+        System.out.println("ASDASDASD");
         this.gotForkRemote = gotFork;
     }
 }
