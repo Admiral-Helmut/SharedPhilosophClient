@@ -384,7 +384,6 @@ public class Philosopher extends Thread {
     }
 
     public void setGotForkRemote(boolean gotFork) {
-        System.out.println("ASDASDASD");
         this.gotForkRemote = gotFork;
     }
 }
