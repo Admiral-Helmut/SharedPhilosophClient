@@ -172,13 +172,19 @@ public class Philosopher extends Thread {
                 }
                 else{
                     seat.takeLeftForkIfAvailable();
+                    long time = System.currentTimeMillis();
                     try {
                         monitor.wait(500);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    if(gotForkRemote){
-                        gotFork = true;
+                    if(System.currentTimeMillis() - time > 400){
+                        RestoreClient.startRestoring();
+                    }
+                    else{
+                        if(gotForkRemote){
+                            gotFork = true;
+                        }
                     }
                 }
             }
