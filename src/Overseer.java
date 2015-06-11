@@ -33,7 +33,7 @@ public class Overseer extends Thread {
         endTime = RestoreClient.getEndTime();
         startPunisher();
         startUpdater();
-        new DisplayOutput().start();
+        //new DisplayOutput().start();
         while(System.currentTimeMillis() < endTime) {
             //TODO: Overseer stuff
         }

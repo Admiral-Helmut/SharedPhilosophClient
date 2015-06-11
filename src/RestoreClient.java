@@ -136,12 +136,10 @@ public class RestoreClient {
             restoreSetNewNeigbours();
             restoreFinishedInformAll();
             System.out.println("Restoring finished.");
-            System.out.println(getRightneighbourLookupName());
-            System.out.println(getLeftneighbourLookupName());
-            System.out.println(ClientServiceImpl.getNeighbourList().size());
-            for (Seat seat : TablePart.getTablePart().getSeats()){
-                System.out.print(seat.getQueueSize() + "-");
-            }
+            System.out.println("New right neighbour: " + getRightneighbourLookupName());
+            System.out.println("New left neighbour: " + getLeftneighbourLookupName());
+            System.out.println("New total Clients count: " + ClientServiceImpl.getNeighbourList().size());
+            System.out.println("New seat amount: " + TablePart.getTablePart().getSeats());
             System.out.println();
             lastRestorAttempt = System.currentTimeMillis();
         }

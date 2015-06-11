@@ -71,7 +71,6 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         philosophers = new ArrayList<>(allPhilosopher+allHungryPhilosopher);
         new RestoreClient(allSeats, allPhilosopher, allHungryPhilosopher, eatTime, meditationTime, sleepTime, runTimeInSeconds, leftneighbourIP, leftneighbourLookupName, rightneighbourIP, rightneighbourLookupName, leftClient, rightClient, debugging);
         tablePart = new TablePart(seats);
-        System.out.println((RestoreClient.getLeftClient() == null)+":" + (RestoreClient.getRightClient() == null));
         for(int i =0; i < RestoreClient.getAllPhilosopher(); i++){
             boolean b = (i+1)>=philosopherOffset&&(i+1)<philosopherOffset+philosopher;
 
@@ -94,7 +93,6 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
                 e.printStackTrace();
             }
         }
-        System.out.println(philosophers.size() + "asd");
         for(Philosopher phil : philosophers) {
             phil.start();
         }
