@@ -148,6 +148,10 @@ public class Seat {
         }
     }
 
+    public boolean takeRightForkIfAvailable() {
+        return rightFork.takeForkIfAvailable(true);
+    }
+
     public void setLeftFork(Fork leftFork) {
         this.leftFork = leftFork;
     }
