@@ -21,6 +21,7 @@ public class Philosopher extends Thread {
     private long endTime;
     private boolean exit = false;
     private Debug debug;
+    private boolean gotForkRemote;
 
     public Philosopher(int ident, boolean hungry, boolean active){
 
@@ -145,21 +146,40 @@ public class Philosopher extends Thread {
             if(RestoreClient.isDebugging()) {
                 System.out.println("Philosopher " + ident + " tries to get left fork.");
             }
-            while (seat != null && !seat.takeLeftForkIfAvailable() && !exit) {
-                try {
-                    debug = Debug.STATE8;
-                    if(seat.getLeftFork() == null) {
-                        ClientServiceImpl.leftForkWaitCall();
-                    }
-                    else {
-                        debug = Debug.STATE9;
-                        synchronized (seat.getLeftFork().getMonitor()){
-                            debug = Debug.STATE10;
-                            seat.getLeftFork().getMonitor().wait();
+            boolean gotFork = false;
+            gotForkRemote = false;
+            while (seat != null && !exit && !gotFork) {
+                if(seat.getLeftFork() != null || RestoreClient.getLeftneighbourLookupName().equals(Main.lookupName)){
+                    gotFork = seat.takeLeftForkIfAvailable();
+                    if(!gotFork){
+                        try {
+                            debug = Debug.STATE8;
+                            if(seat.getLeftFork() == null) {
+                                System.out.println("Ungültig");
+                                ClientServiceImpl.leftForkWaitCall();
+                            }
+                            else {
+                                debug = Debug.STATE9;
+                                synchronized (seat.getLeftFork().getMonitor()){
+                                    debug = Debug.STATE10;
+                                    seat.getLeftFork().getMonitor().wait();
+                                }
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
                     }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                }
+                else{
+                    seat.takeLeftForkIfAvailable();
+                    try {
+                        monitor.wait(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if(gotForkRemote){
+                        gotFork = true;
+                    }
                 }
             }
             debug = Debug.STATE11;
@@ -347,5 +367,9 @@ public class Philosopher extends Thread {
 
     public Debug getDebug() {
         return debug;
+    }
+
+    public void setGotForkRemote(boolean gotFork) {
+        this.gotForkRemote = gotFork;
     }
 }

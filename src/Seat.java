@@ -137,19 +137,15 @@ public class Seat {
 
     public boolean takeLeftForkIfAvailable() {
         if (leftFork != null) {
-            return leftFork.takeForkIfAvailable();
+            return leftFork.takeForkIfAvailable(true);
         } else {
             if(RestoreClient.getLeftneighbourLookupName().equals(Main.lookupName)) {
-                return TablePart.getTablePart().getSeat(TablePart.getTablePart().getSeats().size()-1).getRightFork().takeForkIfAvailable();
+                return TablePart.getTablePart().getSeat(TablePart.getTablePart().getSeats().size()-1).getRightFork().takeForkIfAvailable(true);
             }
             else{
                 return ClientServiceImpl.takeForkIfAvailableCall();
             }
         }
-    }
-
-    public boolean takeRightForkIfAvailable() {
-        return rightFork.takeForkIfAvailable();
     }
 
     public void setLeftFork(Fork leftFork) {
@@ -167,4 +163,6 @@ public class Seat {
     public void setPhilosopher(Philosopher philosopher) {
         this.philosopher = philosopher;
     }
+
+
 }

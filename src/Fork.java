@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.rmi.RemoteException;
 
 /**
  * VSS
@@ -34,8 +35,21 @@ public class Fork implements Serializable {
         return leftSeat;
     }
 
-    public boolean takeForkIfAvailable () {
+    public boolean takeForkIfAvailable (boolean localCall) {
+
         synchronized (monitor) {
+            if(!localCall) {
+                boolean a = false;
+                if (available) {
+                    available = false;
+                    a = true;
+                }
+                try {
+                    RestoreClient.getRightClient().notifyForkAvailable(a);
+                } catch (RemoteException e) {
+                    RestoreClient.startRestoring();
+                }
+            }
             if (available) {
                 available = false;
                 return true;

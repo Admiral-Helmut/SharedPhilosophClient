@@ -22,7 +22,7 @@ public interface ClientRemote extends Remote {
 
     void updatePhilosophers(HashMap<Integer, Integer> philsophersUpdate) throws RemoteException;
 
-    boolean takeForkIfAvailable() throws RemoteException;
+    void takeForkIfAvailable() throws RemoteException;
 
     void awakePhilosopherAddToQueue(int philosopherId, int seatNumber, int mealsEaten) throws RemoteException;
 
@@ -45,4 +45,6 @@ public interface ClientRemote extends Remote {
     void restoreAddSeat() throws RemoteException;
 
     boolean[] restoreGetPhilosophersCount(String lookupName) throws RemoteException;
+
+    void notifyForkAvailable(boolean a) throws RemoteException;
 }

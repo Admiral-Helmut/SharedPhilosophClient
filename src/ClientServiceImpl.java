@@ -111,8 +111,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     @Override
-    public boolean takeForkIfAvailable() throws RemoteException {
-        return tablePart.getSeat(tablePart.getSeats().size()-1).getRightFork().takeForkIfAvailable();
+    public void takeForkIfAvailable() throws RemoteException {
+        tablePart.getSeat(tablePart.getSeats().size()-1).getRightFork().takeForkIfAvailable(false);
     }
 
     @Override
@@ -270,6 +270,14 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         return philosophersForRestoring;
     }
 
+    @Override
+    public void notifyForkAvailable(boolean a) throws RemoteException {
+        Philosopher philosopher = tablePart.getSeats().get(0).getWaitingPhilosophers().element();
+        philosopher.setGotForkRemote(true);
+        philosopher.getMonitor().notify();
+
+    }
+
     public void setMaster(MasterRemote master, String masterName){
         this.master = master;
         this.masterName = masterName;
@@ -320,7 +328,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             return false;
         }
         try {
-            return RestoreClient.getLeftClient().takeForkIfAvailable();
+            RestoreClient.getLeftClient().takeForkIfAvailable();
+            return true;
         } catch (RemoteException e) {
             RestoreClient.startRestoring();
             //System.out.println("takeForkIfAvailableCall");
