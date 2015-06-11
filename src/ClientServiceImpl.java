@@ -20,6 +20,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     private static List<Philosopher> philosophers;
     private static boolean restoringActive = false;
     private static Overseer overseer;
+    private final static boolean debug = true;
 
     TablePart tablePart = null;
     protected ClientServiceImpl() throws RemoteException {
@@ -317,7 +318,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             rightNeighbor.updatePhilosophers(philosophersUpdate);
         } catch (RemoteException e) {
             //System.out.println(RestoreClient.getRightneighbourLookupName() + ":" + Main.lookupName);
-            //System.out.println("updatePhilosophersForNeighborCall");
+            if(debug)
+                System.out.println("updatePhilosophersForNeighborCall");
             if(!RestoreClient.getLeftneighbourLookupName().equals(Main.lookupName)) {
                 RestoreClient.startRestoring();
             }
@@ -333,7 +335,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             return true;
         } catch (RemoteException e) {
             RestoreClient.startRestoring();
-            //System.out.println("takeForkIfAvailableCall");
+            if(debug)
+                System.out.println("takeForkIfAvailableCall");
         }
         return false;
     }
@@ -398,13 +401,13 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             Overseer.setAverage(average);
             return;
         }
-        //System.out.println("ASDASD");
         try {
             List<Integer> averages = new ArrayList<Integer>();
             RestoreClient.getLeftClient().updateAverage(Main.lookupName, averages);
         } catch (RemoteException e) {
             //System.out.println(RestoreClient.getLeftneighbourLookupName() + ":" + Main.lookupName);
-           // System.out.println("updateAverageCall");
+            if(debug)
+                System.out.println("updateAverageCall");
             if(!RestoreClient.getLeftneighbourLookupName().equals(Main.lookupName)){
                 RestoreClient.startRestoring();
             }
