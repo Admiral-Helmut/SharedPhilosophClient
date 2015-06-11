@@ -181,7 +181,7 @@ public class Philosopher extends Thread {
                         e.printStackTrace();
                     }
                     if(System.currentTimeMillis() - time > 400){
-                        System.out.println("Restore due to timeout");
+                        System.out.println("Restore due to timeout: " + (System.currentTimeMillis() - time));
                         RestoreClient.startRestoring();
                     }
                     else{

@@ -168,5 +168,7 @@ public class Seat {
         this.philosopher = philosopher;
     }
 
-
+    public Philosopher getPhilosopher() {
+        return philosopher;
+    }
 }
