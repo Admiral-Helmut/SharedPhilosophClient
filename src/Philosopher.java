@@ -174,7 +174,9 @@ public class Philosopher extends Thread {
                     seat.takeLeftForkIfAvailable();
                     long time = System.currentTimeMillis();
                     try {
-                        monitor.wait(500);
+                        synchronized (monitor){
+                            monitor.wait(500);
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
