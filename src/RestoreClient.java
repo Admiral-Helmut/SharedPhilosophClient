@@ -142,6 +142,7 @@ public class RestoreClient {
             System.out.println("New seat amount: " + TablePart.getTablePart().getSeats());
             System.out.println();
             lastRestorAttempt = System.currentTimeMillis();
+            restoring = false;
         }
     }
 
