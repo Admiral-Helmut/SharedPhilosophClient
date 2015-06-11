@@ -334,9 +334,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             RestoreClient.getLeftClient().takeForkIfAvailable();
             return true;
         } catch (RemoteException e) {
-            RestoreClient.startRestoring();
             if(debug)
                 System.out.println("takeForkIfAvailableCall");
+            RestoreClient.startRestoring();
         }
         return false;
     }
@@ -354,8 +354,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
                 return false;
             }
         } catch (RemoteException e) {
+            if(debug)
+                System.out.println("awakePhilosopherAddToQueueCall");
             RestoreClient.startRestoring();
-            System.out.println("awakePhilosopherAddToQueueCall");
         }
         return false;
     }
@@ -367,7 +368,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         try {
             RestoreClient.getLeftClient().lastForkWait();
         } catch (RemoteException e) {
-            System.out.println("leftForkWaitCall");
+            if(debug)
+                System.out.println("leftForkWaitCall");
             RestoreClient.startRestoring();
         }
     }
@@ -379,7 +381,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         try {
             RestoreClient.getLeftClient().releaseLastFork();
         } catch (RemoteException e) {
-            System.out.println("notifyReleaseLeftForkCall");
+            if(debug)
+                System.out.println("notifyReleaseLeftForkCall");
             RestoreClient.startRestoring();
 
         }
@@ -454,6 +457,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
                 try {
                     currentSeatProposal = entry.getValue().searchSeat();
                 } catch (RemoteException e) {
+                    if(debug)
+                        System.out.println("getbestexternalpropsoal");
                     RestoreClient.startRestoring();
                 }
                 if(currentSeatProposal.getWaitingPhilosophersCount() == 0){
