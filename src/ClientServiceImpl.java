@@ -20,7 +20,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     private static List<Philosopher> philosophers;
     private static boolean restoringActive = false;
     private static Overseer overseer;
-    private final static boolean debug = true;
+    private final static boolean debug = false;
 
     TablePart tablePart = null;
     protected ClientServiceImpl() throws RemoteException {

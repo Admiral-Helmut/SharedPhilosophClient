@@ -155,8 +155,11 @@ public class Philosopher extends Thread {
                         try {
                             debug = Debug.STATE8;
                             if(seat.getLeftFork() == null) {
-                                System.out.println("Ungültig");
-                                ClientServiceImpl.leftForkWaitCall();
+                                Fork fork = TablePart.getTablePart().getSeat(TablePart.getTablePart().getSeats().size()-1).getRightFork();
+                                synchronized (fork.getMonitor()){
+                                    debug = Debug.STATE10;
+                                    fork.getMonitor().wait();
+                                }
                             }
                             else {
                                 debug = Debug.STATE9;
@@ -180,12 +183,12 @@ public class Philosopher extends Thread {
                     long time = System.currentTimeMillis();
                     try {
                         synchronized (monitor){
-                            monitor.wait(500);
+                            monitor.wait(100);
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    if(System.currentTimeMillis() - time > 400){
+                    if(System.currentTimeMillis() - time > 80){
                         System.out.println("Restore due to timeout: " + (System.currentTimeMillis() - time));
                         RestoreClient.startRestoring();
                     }
