@@ -303,10 +303,20 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         philosopher.start();
     }
 
-
     @Override
-    public void removePhilosophers(int removePhilosopherForCurrentClient, int removeHungryPhilosopherForCurrentClient, int amountRemovePhilosophers, int amountRemoveHungryPhilosophers) throws RemoteException {
-
+    public void removePhilosopher(int ident) throws RemoteException {
+        synchronized (monitor){
+            lastUpdate = System.currentTimeMillis();
+        }
+        Philosopher philosopher = philosophers.get(ident);
+        philosopher.setExit(true);
+        philosopher.setActive(false);
+        for(int i = ident + 1; i < philosophers.size(); i++){
+            philosopher.setIdent(i);
+        }
+        philosophers.remove(ident);
+        RestoreClient.setAllPhilosopher(RestoreClient.getAllPhilosopher() - 1);
+        RestoreClient.setAllHungryPhilosopher(RestoreClient.getAllHungryPhilosopher()-1);
     }
 
     public void setMaster(MasterRemote master, String masterName){

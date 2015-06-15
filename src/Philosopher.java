@@ -420,4 +420,8 @@ public class Philosopher extends Thread {
     public boolean isExit() {
         return exit;
     }
+
+    public void setIdent(int ident) {
+        this.ident = ident;
+    }
 }

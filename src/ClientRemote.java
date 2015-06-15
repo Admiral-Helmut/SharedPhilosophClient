@@ -54,6 +54,5 @@ public interface ClientRemote extends Remote {
 
     void addPhilosopher(boolean hungry, boolean active) throws RemoteException;
 
-    void removePhilosophers(int removePhilosopherForCurrentClient, int removeHungryPhilosopherForCurrentClient,
-                            int amountRemovePhilosophers, int amountRemoveHungryPhilosophers) throws RemoteException;
+    void removePhilosopher(int ident) throws RemoteException;
 }
