@@ -111,12 +111,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     @Override
     public void updatePhilosophers(HashMap<Integer, Integer> philsophersUpdate) throws RemoteException {
-        synchronized (getMonitor()){
-            if(getLastUpdate() + 500 < System.currentTimeMillis()){
-                for(Map.Entry<Integer, Integer> philosopher : philsophersUpdate.entrySet()){
-                    philosophers.get(philosopher.getKey() - 1).setMealsEaten(philosopher.getValue());
-                }
-            }
+        for(Map.Entry<Integer, Integer> philosopher : philsophersUpdate.entrySet()){
+            philosophers.get(philosopher.getKey() - 1).setMealsEaten(philosopher.getValue());
         }
     }
 
@@ -358,7 +354,11 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             }
         }
         try {
-            rightNeighbor.updatePhilosophers(philosophersUpdate);
+            synchronized (getMonitor()) {
+                if (getLastUpdate() + 500 < System.currentTimeMillis()) {
+                    rightNeighbor.updatePhilosophers(philosophersUpdate);
+                }
+            }
         } catch (RemoteException e) {
             //System.out.println(RestoreClient.getRightneighbourLookupName() + ":" + Main.lookupName);
             if(debug)
