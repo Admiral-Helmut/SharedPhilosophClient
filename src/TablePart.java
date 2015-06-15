@@ -95,4 +95,32 @@ public class TablePart {
             }
         }
     }
+
+    public void removeSeats(int amount) {
+        List<Seat> removeSeats = new ArrayList<>(amount);
+        for (int i = 0; i < amount; i++){
+            removeSeats.add(seats.get(0));
+            seats.remove(0);
+        }
+        Seat firstSeat = seats.get(0);
+        firstSeat.setLeftFork(null);
+        Philosopher firstPhilosopher = firstSeat.getPhilosopher();
+        if(firstPhilosopher != null){
+            firstPhilosopher.setGotForkRemote(true);
+            synchronized (firstPhilosopher.getMonitor()){
+                firstPhilosopher.getMonitor().notify();
+            }
+        }
+
+        for(Seat seat : removeSeats){
+            for(Philosopher philosopher : seat.getWaitingPhilosophers()){
+                Philosopher p = new Philosopher(philosopher.getIdent(), philosopher.isHungry(), philosopher.getMealsEaten(), philosopher.isActive());
+                philosopher.setExit(true);
+                philosopher.setActive(false);
+                ClientServiceImpl.getPhilosophers().set(philosopher.getIdent()-1, p);
+                p.setStatus(Status.EATING);
+                p.start();
+            }
+        }
+    }
 }
