@@ -281,7 +281,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     @Override
     public void addSeats(int diff, int newAmount) throws RemoteException {
-
+        TablePart.getTablePart().restoreSeats(diff);
+        RestoreClient.setAllSeats(newAmount);
     }
 
     @Override

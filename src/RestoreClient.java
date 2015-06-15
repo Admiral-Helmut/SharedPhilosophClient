@@ -338,4 +338,16 @@ public class RestoreClient {
     public static void setRightClient(ClientRemote rightClient) {
         RestoreClient.rightClient = rightClient;
     }
+
+    public static void setAllSeats(int allSeats) {
+        RestoreClient.allSeats = allSeats;
+    }
+
+    public static void setAllPhilosopher(int allPhilosopher) {
+        RestoreClient.allPhilosopher = allPhilosopher;
+    }
+
+    public static void setAllHungryPhilosopher(int allHungryPhilosopher) {
+        RestoreClient.allHungryPhilosopher = allHungryPhilosopher;
+    }
 }
