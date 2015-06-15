@@ -48,7 +48,6 @@ public class Fork implements Serializable {
                     RestoreClient.getRightClient().notifyForkAvailable(a);
                 } catch (RemoteException e) {
                     System.out.println("takeForkIfAvailable");
-                    RestoreClient.startRestoring();
                 }
             }
             if (available) {

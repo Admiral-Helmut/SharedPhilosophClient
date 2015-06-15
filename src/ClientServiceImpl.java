@@ -347,7 +347,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
                 try {
                     RestoreClient.getLeftClient().takeForkIfAvailable();
                 } catch (RemoteException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
             }
         }).start();

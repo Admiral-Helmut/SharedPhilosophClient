@@ -274,7 +274,7 @@ public class Philosopher extends Thread {
             currentBestSeatProposal = ClientServiceImpl.getBestExternalProposal();
         }
 
-        if(currentBestSeatProposal.isBetterThen(ownSeatProposal)) {
+        if(currentBestSeatProposal != null && currentBestSeatProposal.isBetterThen(ownSeatProposal)) {
             if(RestoreClient.isDebugging()) {
                 System.out.println("Philosopher " + ident + " found seat on other table, it was better: "+currentBestSeatProposal.getWaitingPhilosophersCount()+"-"+ownSeatProposal.getWaitingPhilosophersCount());
             }

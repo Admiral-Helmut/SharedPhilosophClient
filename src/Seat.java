@@ -143,7 +143,6 @@ public class Seat {
                 return TablePart.getTablePart().getSeat(TablePart.getTablePart().getSeats().size()-1).getRightFork().takeForkIfAvailable(true);
             }
             else{
-                System.out.println(RestoreClient.getLeftneighbourLookupName() + ":" + Main.lookupName );
                 return ClientServiceImpl.takeForkIfAvailableCall();
             }
         }
