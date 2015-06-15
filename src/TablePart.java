@@ -105,13 +105,10 @@ public class TablePart {
             seats.remove(0);
         }
         Seat firstSeat = seats.get(0);
+        Fork firstFork = firstSeat.getLeftFork();
         firstSeat.setLeftFork(null);
-        Philosopher firstPhilosopher = firstSeat.getPhilosopher();
-        if(firstPhilosopher != null){
-            firstPhilosopher.setGotForkRemote(true);
-            synchronized (firstPhilosopher.getMonitor()){
-                firstPhilosopher.getMonitor().notify();
-            }
+        synchronized (firstFork.getMonitor()){
+            firstFork.getMonitor().notify();
         }
 
         for(Seat seat : removeSeats){
@@ -119,7 +116,7 @@ public class TablePart {
                 Philosopher p = new Philosopher(philosopher.getIdent(), philosopher.isHungry(), philosopher.getMealsEaten(), true);
                 philosopher.setExit(true);
                 philosopher.setActive(false);
-                ClientServiceImpl.getPhilosophers().set(philosopher.getIdent()-1, p);
+                ClientServiceImpl.getPhilosophers().set(philosopher.getIdent() - 1, p);
                 p.setStatus(Status.EATING);
                 p.start();
             }
