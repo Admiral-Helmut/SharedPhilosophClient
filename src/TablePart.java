@@ -74,4 +74,25 @@ public class TablePart {
         fork.setRightSeat(seats.get(0));
         seats.add(0, seat);
     }
+
+    public void restoreSeats(int amount) {
+        Fork fork = null;
+        List<Seat> newSeats = new ArrayList<>(amount);
+        for(int i = 0; i < amount; i++){
+            Seat seat = new Seat(fork);
+            fork = new Fork(seat);
+            newSeats.add(seat);
+        }
+        Seat firstSeat = seats.get(0);
+        firstSeat.setLeftFork(fork);
+        fork.setRightSeat(firstSeat);
+        seats.addAll(0, newSeats);
+        Philosopher philosopher = firstSeat.getPhilosopher();
+        if(philosopher != null){
+            philosopher.setGotForkRemote(true);
+            synchronized (philosopher.getMonitor()){
+                philosopher.getMonitor().notify();
+            }
+        }
+    }
 }
