@@ -292,9 +292,12 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     @Override
-    public void addPhilosophers(int newPhilosopherForCurrentClient, int newHungryPhilosopherForCurrentClient, int amountNewPhilosophers, int amountNewHungryPhilosophers) throws RemoteException {
-
+    public void addPhilosopher(boolean hungry, boolean active) throws RemoteException {
+        Philosopher philosopher = new Philosopher(philosophers.size(), hungry, active);
+        philosophers.add(philosopher);
+        philosopher.start();
     }
+
 
     @Override
     public void removePhilosophers(int removePhilosopherForCurrentClient, int removeHungryPhilosopherForCurrentClient, int amountRemovePhilosophers, int amountRemoveHungryPhilosophers) throws RemoteException {
