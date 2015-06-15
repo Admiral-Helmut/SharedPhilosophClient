@@ -105,7 +105,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     public void searchSeat(String lookupName) throws RemoteException {
         SeatProposal seatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
         System.out.println((neighbourList.get(lookupName) == null) + "asd" + lookupName);
-        neighbourList.get(lookupName).notifySetProposal(seatProposal);
+        if(neighbourList.get(lookupName) != null){
+            neighbourList.get(lookupName).notifySetProposal(seatProposal);
+        }
     }
 
     @Override
@@ -278,9 +280,11 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     @Override
     public void notifyForkAvailable(boolean a) throws RemoteException {
         Philosopher philosopher = tablePart.getSeats().get(0).getPhilosopher();
-        philosopher.setGotForkRemote(true);
-        synchronized (philosopher.getMonitor()){
-            philosopher.getMonitor().notify();
+        if(philosopher != null){
+            philosopher.setGotForkRemote(true);
+            synchronized (philosopher.getMonitor()){
+                philosopher.getMonitor().notify();
+            }
         }
     }
 
