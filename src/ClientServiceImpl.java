@@ -138,21 +138,6 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     @Override
-    public void lastForkWait() throws RemoteException {
-        Fork fork = tablePart.getSeat(tablePart.getSeats().size()-1).getRightFork();
-        synchronized (fork.getMonitor()) {
-            if(fork.isAvailable()) {
-                return;
-            }
-            try {
-                fork.getMonitor().wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
     public void releaseLastFork() throws RemoteException {
         Fork fork = tablePart.getSeat(tablePart.getSeats().size()-1).getRightFork();
         synchronized (fork.getMonitor()) {
@@ -396,19 +381,6 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             RestoreClient.startRestoring();
         }
         return false;
-    }
-
-    public static void leftForkWaitCall() {
-        if(restoringActive || RestoreClient.getLeftneighbourLookupName().equals(Main.lookupName)){
-            return;
-        }
-        try {
-            RestoreClient.getLeftClient().lastForkWait();
-        } catch (RemoteException e) {
-            if(debug)
-                System.out.println("leftForkWaitCall");
-            RestoreClient.startRestoring();
-        }
     }
 
     public static void notifyReleaseLeftForkCall() {

@@ -26,8 +26,6 @@ public interface ClientRemote extends Remote {
 
     void awakePhilosopherAddToQueue(int philosopherId, int seatNumber, int mealsEaten) throws RemoteException;
 
-    void lastForkWait() throws RemoteException;
-
     void releaseLastFork() throws RemoteException;
 
     void updateAverage(String lookupName, List<Integer> averages) throws RemoteException;
