@@ -116,7 +116,7 @@ public class TablePart {
 
         for(Seat seat : removeSeats){
             for(Philosopher philosopher : seat.getWaitingPhilosophers()){
-                Philosopher p = new Philosopher(philosopher.getIdent(), philosopher.isHungry(), philosopher.getMealsEaten(), philosopher.isActive());
+                Philosopher p = new Philosopher(philosopher.getIdent(), philosopher.isHungry(), philosopher.getMealsEaten(), true);
                 philosopher.setExit(true);
                 philosopher.setActive(false);
                 ClientServiceImpl.getPhilosophers().set(philosopher.getIdent()-1, p);
