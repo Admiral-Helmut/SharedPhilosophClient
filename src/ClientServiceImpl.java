@@ -473,29 +473,30 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         for(Map.Entry<String, ClientRemote> entry : neighbourList.entrySet()){
             if(!entry.getKey().equals(Main.lookupName)){
                 SeatProposal currentSeatProposal = null;
-                try {
-                    System.out.println("1ASD:" + callingPhilosopher.getIdent() + ":" + System.currentTimeMillis());
-                    entry.getValue().searchSeat(Main.lookupName, callingPhilosopher.getIdent());
-                    long startTime = System.currentTimeMillis();
-                    try {
-                        synchronized (callingPhilosopher.getSeatProposalMonitor()){
-                            callingPhilosopher.getSeatProposalMonitor().wait(100);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            entry.getValue().searchSeat(Main.lookupName, callingPhilosopher.getIdent());
+                        } catch (RemoteException e) {
+                            //e.printStackTrace();
                         }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
-                    if(System.currentTimeMillis() - startTime > 80){
-                        if(debug)
-                            System.out.println("Restoring started due to timeout when waiting for seat");
-                        RestoreClient.startRestoring();
+                }).start();
+                long startTime = System.currentTimeMillis();
+                try {
+                    synchronized (callingPhilosopher.getSeatProposalMonitor()){
+                        callingPhilosopher.getSeatProposalMonitor().wait(100);
                     }
-                    currentSeatProposal = callingPhilosopher.getPushedSeatProposal();
-
-                } catch (RemoteException e) {
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if(System.currentTimeMillis() - startTime > 80){
                     if(debug)
-                        System.out.println("getBestExternalProposal");
+                        System.out.println("Restoring started due to timeout when waiting for seat");
                     RestoreClient.startRestoring();
                 }
+                currentSeatProposal = callingPhilosopher.getPushedSeatProposal();
                 if(currentSeatProposal != null && currentSeatProposal.getWaitingPhilosophersCount() == 0){
                     return currentSeatProposal;
                 }
