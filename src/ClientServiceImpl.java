@@ -287,13 +287,11 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     @Override
     public void notifySetProposal(SeatProposal seatProposal, int philosopherID) throws RemoteException {
-        System.out.println("2ASD:" + philosopherID + ":" + System.currentTimeMillis());
         Philosopher philosopher = philosophers.get(philosopherID-1);
         philosopher.setPushedSeatProposal(seatProposal);
         synchronized (philosopher.getSeatProposalMonitor()){
             philosopher.getSeatProposalMonitor().notify();
         }
-        System.out.println("2ASD:" + philosopherID + ":" + System.currentTimeMillis());
     }
 
     public void setMaster(MasterRemote master, String masterName){
@@ -470,42 +468,46 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     public static SeatProposal getBestExternalProposal(Philosopher callingPhilosopher) {
         SeatProposal bestSeatProposal = null;
-        for(Map.Entry<String, ClientRemote> entry : neighbourList.entrySet()){
-            if(!entry.getKey().equals(Main.lookupName)){
-                SeatProposal currentSeatProposal = null;
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            entry.getValue().searchSeat(Main.lookupName, callingPhilosopher.getIdent());
-                        } catch (RemoteException e) {
-                            //e.printStackTrace();
+        try{
+            for(Map.Entry<String, ClientRemote> entry : neighbourList.entrySet()){
+                if(!entry.getKey().equals(Main.lookupName)){
+                    SeatProposal currentSeatProposal = null;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                entry.getValue().searchSeat(Main.lookupName, callingPhilosopher.getIdent());
+                            } catch (RemoteException e) {
+                                //e.printStackTrace();
+                            }
                         }
+                    }).start();
+                    long startTime = System.currentTimeMillis();
+                    try {
+                        synchronized (callingPhilosopher.getSeatProposalMonitor()){
+                            callingPhilosopher.getSeatProposalMonitor().wait(1000);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                }).start();
-                long startTime = System.currentTimeMillis();
-                try {
-                    synchronized (callingPhilosopher.getSeatProposalMonitor()){
-                        callingPhilosopher.getSeatProposalMonitor().wait(100);
+                    if(System.currentTimeMillis() - startTime > 900){
+                        if(debug)
+                            System.out.println("Restoring started due to timeout when waiting for seat");
+                        RestoreClient.startRestoring();
                     }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if(System.currentTimeMillis() - startTime > 80){
-                    if(debug)
-                        System.out.println("Restoring started due to timeout when waiting for seat");
-                    RestoreClient.startRestoring();
-                }
-                currentSeatProposal = callingPhilosopher.getPushedSeatProposal();
-                if(currentSeatProposal != null && currentSeatProposal.getWaitingPhilosophersCount() == 0){
-                    return currentSeatProposal;
-                }
-                if(currentSeatProposal != null){
-                    if(bestSeatProposal == null || currentSeatProposal.isBetterThen(bestSeatProposal)){
-                        bestSeatProposal = currentSeatProposal;
+                    currentSeatProposal = callingPhilosopher.getPushedSeatProposal();
+                    if(currentSeatProposal != null && currentSeatProposal.getWaitingPhilosophersCount() == 0){
+                        return currentSeatProposal;
+                    }
+                    if(currentSeatProposal != null){
+                        if(bestSeatProposal == null || currentSeatProposal.isBetterThen(bestSeatProposal)){
+                            bestSeatProposal = currentSeatProposal;
+                        }
                     }
                 }
             }
+        }catch (ConcurrentModificationException e){
+
         }
         return bestSeatProposal;
     }

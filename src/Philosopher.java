@@ -186,12 +186,12 @@ public class Philosopher extends Thread {
                     long time = System.currentTimeMillis();
                     try {
                         synchronized (monitor){
-                            monitor.wait(100);
+                            monitor.wait(1000);
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    if(System.currentTimeMillis() - time > 80){
+                    if(System.currentTimeMillis() - time > 900){
                         System.out.println("Restore due to timeout: " + (System.currentTimeMillis() - time));
                         RestoreClient.startRestoring();
                     }
