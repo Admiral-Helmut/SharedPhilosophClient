@@ -289,7 +289,12 @@ public class Philosopher extends Thread {
     }
 
     private void takeSeatWhenAvailable(Seat seat) {
-        this.seat = seat.getSeatWithSmallesQueue(this);
+        if(seat == null){
+            this.seat = TablePart.getTablePart().getSeat(0).getSeatWithSmallesQueue(this);
+        }
+        else{
+            this.seat = seat.getSeatWithSmallesQueue(this);
+        }
         debug = Debug.STATE4;
 
         if(this.seat == null) {
