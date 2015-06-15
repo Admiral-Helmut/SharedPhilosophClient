@@ -287,11 +287,13 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     @Override
     public void notifySetProposal(SeatProposal seatProposal, int philosopherID) throws RemoteException {
-        Philosopher philosopher = philosophers.get(philosopherID);
+        System.out.println("2ASD:" + philosopherID + ":" + System.currentTimeMillis());
+        Philosopher philosopher = philosophers.get(philosopherID-1);
         philosopher.setPushedSeatProposal(seatProposal);
         synchronized (philosopher.getSeatProposalMonitor()){
             philosopher.getSeatProposalMonitor().notify();
         }
+        System.out.println("2ASD:" + philosopherID + ":" + System.currentTimeMillis());
     }
 
     public void setMaster(MasterRemote master, String masterName){
@@ -472,6 +474,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             if(!entry.getKey().equals(Main.lookupName)){
                 SeatProposal currentSeatProposal = null;
                 try {
+                    System.out.println("1ASD:" + callingPhilosopher.getIdent() + ":" + System.currentTimeMillis());
                     entry.getValue().searchSeat(Main.lookupName, callingPhilosopher.getIdent());
                     long startTime = System.currentTimeMillis();
                     try {
