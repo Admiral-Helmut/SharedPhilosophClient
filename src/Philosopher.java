@@ -174,6 +174,7 @@ public class Philosopher extends Thread {
                     }
                 }
                 else{
+                    System.out.println("1asd" + System.currentTimeMillis());
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -188,6 +189,7 @@ public class Philosopher extends Thread {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    System.out.println("2asd" + System.currentTimeMillis());
                     if(System.currentTimeMillis() - time > 80){
                         System.out.println("Restore due to timeout: " + (System.currentTimeMillis() - time));
                         RestoreClient.startRestoring();
