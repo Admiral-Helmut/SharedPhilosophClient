@@ -408,4 +408,8 @@ public class Philosopher extends Thread {
     public void setSeatProposalMonitor(Object seatProposalMonitor) {
         this.seatProposalMonitor = seatProposalMonitor;
     }
+
+    public boolean isExit() {
+        return exit;
+    }
 }

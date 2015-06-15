@@ -484,6 +484,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    if(callingPhilosopher.isExit()){
+                        return null;
+                    }
                     if(System.currentTimeMillis() - startTime > 900){
                         if(debug)
                             System.out.println("Restoring started due to timeout when waiting for seat");
