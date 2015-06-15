@@ -87,7 +87,11 @@ public class Overseer extends Thread {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                ClientServiceImpl.updatePhilosophersForNeighborCall(philosophers);
+                synchronized (ClientServiceImpl.getMonitor()){
+                    if(ClientServiceImpl.getLastUpdate() + 500 < System.currentTimeMillis()){
+                        ClientServiceImpl.updatePhilosophersForNeighborCall(philosophers);
+                    }
+                }
             }
         }
 

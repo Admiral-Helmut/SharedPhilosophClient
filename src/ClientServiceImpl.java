@@ -23,6 +23,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     private static Overseer overseer;
     private final static boolean debug = true;
     TablePart tablePart = null;
+    private static Object monitor = new Object();
+    private static long lastUpdate = 0;
     protected ClientServiceImpl() throws RemoteException {
 
         neighbourList = new HashMap<>();
@@ -272,7 +274,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     @Override
     public void notifySetProposal(SeatProposal seatProposal, int philosopherID) throws RemoteException {
-        Philosopher philosopher = philosophers.get(philosopherID-1);
+        Philosopher philosopher = philosophers.get(philosopherID - 1);
         philosopher.setPushedSeatProposal(seatProposal);
         synchronized (philosopher.getSeatProposalMonitor()){
             philosopher.getSeatProposalMonitor().notify();
@@ -293,7 +295,10 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     @Override
     public void addPhilosopher(boolean hungry, boolean active) throws RemoteException {
-        Philosopher philosopher = new Philosopher(philosophers.size(), hungry, active);
+        synchronized (monitor){
+            lastUpdate = System.currentTimeMillis();
+        }
+        Philosopher philosopher = new Philosopher(philosophers.size()+1, hungry, active);
         philosophers.add(philosopher);
         philosopher.start();
     }
@@ -510,6 +515,14 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
         }
         return bestSeatProposal;
+    }
+
+    public static long getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public static Object getMonitor() {
+        return monitor;
     }
 }
 
