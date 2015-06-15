@@ -111,8 +111,12 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     @Override
     public void updatePhilosophers(HashMap<Integer, Integer> philsophersUpdate) throws RemoteException {
-        for(Map.Entry<Integer, Integer> philosopher : philsophersUpdate.entrySet()){
-            philosophers.get(philosopher.getKey() - 1).setMealsEaten(philosopher.getValue());
+        synchronized (getMonitor()){
+            if(getLastUpdate() + 500 < System.currentTimeMillis()){
+                for(Map.Entry<Integer, Integer> philosopher : philsophersUpdate.entrySet()){
+                    philosophers.get(philosopher.getKey() - 1).setMealsEaten(philosopher.getValue());
+                }
+            }
         }
     }
 
@@ -316,7 +320,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         }
         philosophers.remove(ident);
         RestoreClient.setAllPhilosopher(RestoreClient.getAllPhilosopher() - 1);
-        RestoreClient.setAllHungryPhilosopher(RestoreClient.getAllHungryPhilosopher()-1);
+        RestoreClient.setAllHungryPhilosopher(RestoreClient.getAllHungryPhilosopher() - 1);
     }
 
     public void setMaster(MasterRemote master, String masterName){
@@ -480,6 +484,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     public static SeatProposal getBestExternalProposal(Philosopher callingPhilosopher) {
         SeatProposal bestSeatProposal = null;
+        if(getLastUpdate() + 500 > System.currentTimeMillis()) {
+            return null;
+        }
         try{
             for(Map.Entry<String, ClientRemote> entry : neighbourList.entrySet()){
                 if(!entry.getKey().equals(Main.lookupName)){
