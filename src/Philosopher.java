@@ -23,6 +23,9 @@ public class Philosopher extends Thread {
     private Debug debug;
     private boolean gotForkRemote;
 
+    private Object seatProposalMonitor = new Object();
+    private SeatProposal pushedSeatProposal;
+
     public Philosopher(int ident, boolean hungry, boolean active){
 
         this.ident = ident;
@@ -271,7 +274,7 @@ public class Philosopher extends Thread {
             currentBestSeatProposal = ownSeatProposal;
         }
         else {
-            currentBestSeatProposal = ClientServiceImpl.getBestExternalProposal();
+            currentBestSeatProposal = ClientServiceImpl.getBestExternalProposal(this);
         }
 
         if(currentBestSeatProposal != null && currentBestSeatProposal.isBetterThen(ownSeatProposal)) {
@@ -388,5 +391,21 @@ public class Philosopher extends Thread {
 
     public void setGotForkRemote(boolean gotFork) {
         this.gotForkRemote = gotFork;
+    }
+
+    public SeatProposal getPushedSeatProposal() {
+        return pushedSeatProposal;
+    }
+
+    public void setPushedSeatProposal(SeatProposal pushedSeatProposal) {
+        this.pushedSeatProposal = pushedSeatProposal;
+    }
+
+    public Object getSeatProposalMonitor() {
+        return seatProposalMonitor;
+    }
+
+    public void setSeatProposalMonitor(Object seatProposalMonitor) {
+        this.seatProposalMonitor = seatProposalMonitor;
     }
 }

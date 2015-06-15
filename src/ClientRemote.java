@@ -18,7 +18,7 @@ public interface ClientRemote extends Remote {
                            String leftneighbourLookupName , String rightneighbourIP,
                            String rightneighbourLookupName, boolean debugging, long startTime) throws RemoteException;
 
-    void searchSeat(String lookupName) throws RemoteException;
+    void searchSeat(String lookupName, int callingPhilosopherID) throws RemoteException;
 
     void updatePhilosophers(HashMap<Integer, Integer> philsophersUpdate) throws RemoteException;
 
@@ -48,5 +48,5 @@ public interface ClientRemote extends Remote {
 
     void notifyForkAvailable(boolean a) throws RemoteException;
 
-    void notifySetProposal(SeatProposal seatProposal) throws RemoteException;
+    void notifySetProposal(SeatProposal seatProposal, int philosopherID) throws RemoteException;
 }

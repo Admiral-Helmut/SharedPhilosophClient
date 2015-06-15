@@ -22,8 +22,6 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     private static boolean restoringActive = false;
     private static Overseer overseer;
     private final static boolean debug = true;
-    private static SeatProposal pushedSeatProposal;
-    private static Object monitor = new Object();
     TablePart tablePart = null;
     protected ClientServiceImpl() throws RemoteException {
 
@@ -102,11 +100,10 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         overseer.start();
     }
 
-    public void searchSeat(String lookupName) throws RemoteException {
+    public void searchSeat(String lookupName, int callingPhilosopherID) throws RemoteException {
         SeatProposal seatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
-        System.out.println((neighbourList.get(lookupName) == null) + "asd" + lookupName);
         if(neighbourList.get(lookupName) != null){
-            neighbourList.get(lookupName).notifySetProposal(seatProposal);
+            neighbourList.get(lookupName).notifySetProposal(seatProposal, callingPhilosopherID);
         }
     }
 
@@ -289,10 +286,11 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     @Override
-    public void notifySetProposal(SeatProposal seatProposal) throws RemoteException {
-        pushedSeatProposal = seatProposal;
-        synchronized (monitor){
-            monitor.notify();
+    public void notifySetProposal(SeatProposal seatProposal, int philosopherID) throws RemoteException {
+        Philosopher philosopher = philosophers.get(philosopherID);
+        philosopher.setPushedSeatProposal(seatProposal);
+        synchronized (philosopher.getSeatProposalMonitor()){
+            philosopher.getSeatProposalMonitor().notify();
         }
     }
 
@@ -468,17 +466,17 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         return overseer;
     }
 
-    public static SeatProposal getBestExternalProposal() {
+    public static SeatProposal getBestExternalProposal(Philosopher callingPhilosopher) {
         SeatProposal bestSeatProposal = null;
         for(Map.Entry<String, ClientRemote> entry : neighbourList.entrySet()){
             if(!entry.getKey().equals(Main.lookupName)){
                 SeatProposal currentSeatProposal = null;
                 try {
-                    entry.getValue().searchSeat(Main.lookupName);
+                    entry.getValue().searchSeat(Main.lookupName, callingPhilosopher.getIdent());
                     long startTime = System.currentTimeMillis();
                     try {
-                        synchronized (monitor){
-                            monitor.wait(100);
+                        synchronized (callingPhilosopher.getSeatProposalMonitor()){
+                            callingPhilosopher.getSeatProposalMonitor().wait(100);
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -488,7 +486,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
                             System.out.println("Restoring started due to timeout when waiting for seat");
                         RestoreClient.startRestoring();
                     }
-                    currentSeatProposal = pushedSeatProposal;
+                    currentSeatProposal = callingPhilosopher.getPushedSeatProposal();
 
                 } catch (RemoteException e) {
                     if(debug)
