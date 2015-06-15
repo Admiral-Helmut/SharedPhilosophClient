@@ -59,6 +59,8 @@ public class TablePart {
     }
 
     public Seat getSeat (int index) {
+        if(index < 0 || index >= seats.size())
+            return null;
         return seats.get(index);
     }
 
