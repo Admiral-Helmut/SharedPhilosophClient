@@ -341,15 +341,18 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         if(restoringActive){
             return false;
         }
-        try {
-            RestoreClient.getLeftClient().takeForkIfAvailable();
-            return true;
-        } catch (RemoteException e) {
-            if(debug)
-                System.out.println("takeForkIfAvailableCall");
-            RestoreClient.startRestoring();
-        }
-        return false;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    RestoreClient.getLeftClient().takeForkIfAvailable();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+        return true;
     }
 
     public static boolean awakePhilosopherAddToQueueCall(int philosopherId, int seatNumber, String name, int mealsEaten) {
