@@ -104,6 +104,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     public void searchSeat(String lookupName) throws RemoteException {
         SeatProposal seatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
+        System.out.println((neighbourList.get(lookupName) == null) + "asd" + lookupName);
         neighbourList.get(lookupName).notifySetProposal(seatProposal);
     }
 
@@ -472,7 +473,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
                     entry.getValue().searchSeat(Main.lookupName);
                     long startTime = System.currentTimeMillis();
                     try {
-                        monitor.wait(100);
+                        synchronized (monitor){
+                            monitor.wait(100);
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -488,7 +491,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
                         System.out.println("getBestExternalProposal");
                     RestoreClient.startRestoring();
                 }
-                if(currentSeatProposal.getWaitingPhilosophersCount() == 0){
+                if(currentSeatProposal != null && currentSeatProposal.getWaitingPhilosophersCount() == 0){
                     return currentSeatProposal;
                 }
                 if(currentSeatProposal != null){
