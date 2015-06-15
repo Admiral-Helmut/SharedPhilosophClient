@@ -49,4 +49,14 @@ public interface ClientRemote extends Remote {
     void notifyForkAvailable(boolean a) throws RemoteException;
 
     void notifySetProposal(SeatProposal seatProposal, int philosopherID) throws RemoteException;
+
+    void addSeats(int diff, int newAmount) throws RemoteException;
+
+    void removeSeats(int diff, int newAmount) throws RemoteException;
+
+    void addPhilosophers(int newPhilosopherForCurrentClient, int newHungryPhilosopherForCurrentClient,
+                         int amountNewPhilosophers, int amountNewHungryPhilosophers) throws RemoteException;
+
+    void removePhilosophers(int removePhilosopherForCurrentClient, int removeHungryPhilosopherForCurrentClient,
+                            int amountRemovePhilosophers, int amountRemoveHungryPhilosophers) throws RemoteException;
 }
