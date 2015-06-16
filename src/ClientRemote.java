@@ -20,7 +20,7 @@ public interface ClientRemote extends Remote {
 
     void searchSeat(String lookupName, int callingPhilosopherID, int allPhilosophersAmount) throws RemoteException;
 
-    void updatePhilosophers(HashMap<Integer, Integer> philsophersUpdate) throws RemoteException;
+    void updatePhilosophers(HashMap<Integer, Integer> philsophersUpdate, int allPhilosopherAmount) throws RemoteException;
 
     void takeForkIfAvailable() throws RemoteException;
 
