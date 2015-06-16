@@ -326,7 +326,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             for(Philosopher philosopher1 : philosophers){
                 System.out.print(philosopher1.getIdent() + "-");
             }
-            System.out.println();
+            System.out.println("--" + philosopher.getState());
             RestoreClient.setAllPhilosopher(RestoreClient.getAllPhilosopher() - 1);
             RestoreClient.setAllHungryPhilosopher(RestoreClient.getAllHungryPhilosopher() - 1);
         }
