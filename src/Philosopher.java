@@ -87,7 +87,7 @@ public class Philosopher extends Thread {
 
         }
 
-        if(!exit && active)
+        if(!exit)
             System.out.println("Philosopher finished with " + mealsEaten + " meals Eaten he was " + ((active) ? "activ" : "inaktiv") + ".");
 
 
@@ -95,6 +95,7 @@ public class Philosopher extends Thread {
 
     private boolean tryToEat() {
         if(isPunished()) {
+            debug = Debug.STATE21;
             status = Status.MEDITATING;
             try {
                 sleep(RestoreClient.getMeditationTime() * 5);
@@ -104,20 +105,29 @@ public class Philosopher extends Thread {
             setPunished(false);
             return true;
         }else {
+            debug = Debug.STATE22;
             if(tryToGetLocalSeat()){
+                debug = Debug.STATE23;
                 return true;
             }else{
+                debug = Debug.STATE24;
                 SeatProposal seatProposal = searchSeat();
                 if(seatProposal.getName().equals(Main.lookupName)) {
+                    debug = Debug.STATE25;
                     if(!exit){
+                        debug = Debug.STATE26;
                         takeSeatWhenAvailable(TablePart.getTablePart().getSeat(seatProposal.getSeatNumber()));
+                        debug = Debug.STATE27;
                         startEating();
                     }
                     return true;
                 }
                 else{
+                    debug = Debug.STATE28;
                     if(!ClientServiceImpl.awakePhilosopherAddToQueueCall(ident, seatProposal.getSeatNumber(), seatProposal.getName(), mealsEaten)){
+                        debug = Debug.STATE29;
                         if(!exit){
+                            debug = Debug.STATE30;
                             SeatProposal ownSeatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
                             takeSeatWhenAvailable(TablePart.getTablePart().getSeat(ownSeatProposal.getSeatNumber()));
                             startEating();
