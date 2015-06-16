@@ -64,7 +64,9 @@ public class Overseer extends Thread {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                for(Philosopher philosopher : philosophers) {
+                List<Philosopher> philosophesCopy = new ArrayList<>(philosophers.size());
+                philosophesCopy.addAll(philosophers);
+                for(Philosopher philosopher : philosophesCopy) {
                     System.out.println(philosopher.getIdent() + ":" + philosopher.getMealsEaten() + ":" + philosopher.getStatus() + ":" + philosopher.isActive() + ":" + philosopher.isPunished() + ":"+ philosopher.getDebug());
                 }
                 for(Seat seat : TablePart.getTablePart().getSeats()){
