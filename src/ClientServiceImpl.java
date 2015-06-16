@@ -114,7 +114,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         if (getLastUpdate() + 200 < System.currentTimeMillis()) {
             for(Map.Entry<Integer, Integer> philosopher : philsophersUpdate.entrySet()){
                 if(allPhilosopherAmount == philosophers.size())
-                  philosophers.get(philosopher.getKey() - 1).setMealsEaten(philosopher.getValue());
+                    philosophers.get(philosopher.getKey() - 1).setMealsEaten(philosopher.getValue());
             }
         }
     }
@@ -353,6 +353,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         }
         ClientRemote rightNeighbor = RestoreClient.getRightClient();
         HashMap<Integer, Integer> philosophersUpdate = new HashMap<>();
+        int oldSize = philosophers.size();
         for(Philosopher philosopher : philosophers) {
             if(philosopher.isActive()) {
                 philosophersUpdate.put(philosopher.getIdent(), philosopher.getMealsEaten());
@@ -360,7 +361,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         }
         try {
             synchronized (getMonitor()) {
-                if (getLastUpdate() + 200 < System.currentTimeMillis()) {
+                if (getLastUpdate() + 200 < System.currentTimeMillis() && oldSize == philosophers.size()) {
                     rightNeighbor.updatePhilosophers(philosophersUpdate, philosophers.size());
                 }
             }
