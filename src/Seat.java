@@ -109,7 +109,15 @@ public class Seat {
             getRightFork().releaseFork();
             if(waitingPhilosophers.size() > 0){
                 waitingPhilosophers.remove();
-                philosopher = waitingPhilosophers.peek();
+                boolean rerun = true;
+                while(rerun){
+                    philosopher = waitingPhilosophers.peek();
+                    rerun = false;
+                    if(philosopher.isExit()){
+                        waitingPhilosophers.remove();
+                        rerun = true;
+                    }
+                }
                 if (philosopher != null) {
                     philosopher.setSeat(this);
                     synchronized (philosopher.getMonitor()) {
