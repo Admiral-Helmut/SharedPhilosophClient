@@ -111,11 +111,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     @Override
     public void updatePhilosophers(HashMap<Integer, Integer> philsophersUpdate) throws RemoteException {
-        synchronized (getMonitor()) {
-            if (getLastUpdate() + 200 < System.currentTimeMillis()) {
-                for(Map.Entry<Integer, Integer> philosopher : philsophersUpdate.entrySet()){
-                    philosophers.get(philosopher.getKey() - 1).setMealsEaten(philosopher.getValue());
-                }
+        if (getLastUpdate() + 200 < System.currentTimeMillis()) {
+            for(Map.Entry<Integer, Integer> philosopher : philsophersUpdate.entrySet()){
+                philosophers.get(philosopher.getKey() - 1).setMealsEaten(philosopher.getValue());
             }
         }
     }
@@ -278,14 +276,12 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     @Override
     public void notifySetProposal(SeatProposal seatProposal, int philosopherID) throws RemoteException {
-        synchronized (getMonitor()) {
-            if (getLastUpdate() + 200 < System.currentTimeMillis()) {
-                Philosopher philosopher = philosophers.get(philosopherID - 1);
-                philosopher.setPushedSeatProposal(seatProposal);
-                synchronized (philosopher.getSeatProposalMonitor()){
-                    philosopher.getSeatProposalMonitor().notify();
-                };
-            }
+        if (getLastUpdate() + 500 < System.currentTimeMillis()) {
+            Philosopher philosopher = philosophers.get(philosopherID - 1);
+            philosopher.setPushedSeatProposal(seatProposal);
+            synchronized (philosopher.getSeatProposalMonitor()){
+                philosopher.getSeatProposalMonitor().notify();
+            };
         }
     }
 
@@ -313,18 +309,18 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     @Override
     public void removePhilosopher(int ident) throws RemoteException {
-        synchronized (monitor){
+        synchronized (monitor) {
             lastUpdate = System.currentTimeMillis();
+            Philosopher philosopher = philosophers.get(ident);
+            philosopher.setExit(true);
+            philosopher.setActive(false);
+            for (int i = ident + 1; i < philosophers.size(); i++) {
+                philosopher.setIdent(i);
+            }
+            philosophers.remove(ident);
+            RestoreClient.setAllPhilosopher(RestoreClient.getAllPhilosopher() - 1);
+            RestoreClient.setAllHungryPhilosopher(RestoreClient.getAllHungryPhilosopher() - 1);
         }
-        Philosopher philosopher = philosophers.get(ident);
-        philosopher.setExit(true);
-        philosopher.setActive(false);
-        for(int i = ident + 1; i < philosophers.size(); i++){
-            philosopher.setIdent(i);
-        }
-        philosophers.remove(ident);
-        RestoreClient.setAllPhilosopher(RestoreClient.getAllPhilosopher() - 1);
-        RestoreClient.setAllHungryPhilosopher(RestoreClient.getAllHungryPhilosopher() - 1);
     }
 
     public void setMaster(MasterRemote master, String masterName){
