@@ -424,4 +424,8 @@ public class Philosopher extends Thread {
     public void setIdent(int ident) {
         this.ident = ident;
     }
+
+    public Seat getSeat() {
+        return seat;
+    }
 }

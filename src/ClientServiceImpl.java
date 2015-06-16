@@ -320,6 +320,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
                 philosophers.get(i).setIdent(i);
             }
             philosophers.remove(ident);
+            Seat seat = philosopher.getSeat();
+            if(seat != null)
+                seat.removePhilosopher();
             for(Philosopher philosopher1 : philosophers){
                 System.out.print(philosopher1.getIdent() + "-");
             }
