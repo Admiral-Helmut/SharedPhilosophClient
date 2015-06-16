@@ -113,7 +113,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     public void updatePhilosophers(HashMap<Integer, Integer> philsophersUpdate, int allPhilosopherAmount) throws RemoteException {
         if (getLastUpdate() + 200 < System.currentTimeMillis()) {
             for(Map.Entry<Integer, Integer> philosopher : philsophersUpdate.entrySet()){
-                if(allPhilosopherAmount == philosophers.size() && philosopher.getKey()-1 < allPhilosopherAmount) {
+                if(allPhilosopherAmount == philosophers.size()) {
                     philosophers.get(philosopher.getKey() - 1).setMealsEaten(philosopher.getValue());
                 }
             }
@@ -316,10 +316,14 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
             Philosopher philosopher = philosophers.get(ident);
             philosopher.setExit(true);
             philosopher.setActive(false);
-            for (int i = ident + 1; i < philosophers.size(); i++) {
-                philosopher.setIdent(i);
+            for (int i = ident; i < philosophers.size(); i++) {
+                philosophers.get(i).setIdent(i);
             }
             philosophers.remove(ident);
+            for(Philosopher philosopher1 : philosophers){
+                System.out.print(philosopher1.getIdent() + "-");
+            }
+            System.out.println();
             RestoreClient.setAllPhilosopher(RestoreClient.getAllPhilosopher() - 1);
             RestoreClient.setAllHungryPhilosopher(RestoreClient.getAllHungryPhilosopher() - 1);
         }
@@ -535,7 +539,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
                     }
 
                     synchronized (getMonitor()) {
-                        if (getLastUpdate() + 1200 > System.currentTimeMillis()) {
+                        if (getLastUpdate() + 1500 > System.currentTimeMillis()) {
                             return null;
                         }
                     }
