@@ -113,8 +113,9 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     public void updatePhilosophers(HashMap<Integer, Integer> philsophersUpdate, int allPhilosopherAmount) throws RemoteException {
         if (getLastUpdate() + 200 < System.currentTimeMillis()) {
             for(Map.Entry<Integer, Integer> philosopher : philsophersUpdate.entrySet()){
-                if(allPhilosopherAmount == philosophers.size())
+                if(allPhilosopherAmount == philosophers.size() && philosopher.getKey()-1 < allPhilosopherAmount) {
                     philosophers.get(philosopher.getKey() - 1).setMealsEaten(philosopher.getValue());
+                }
             }
         }
     }
@@ -144,7 +145,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     @Override
     public void releaseLastFork() throws RemoteException {
-        Fork fork = tablePart.getSeat(tablePart.getSeats().size()-1).getRightFork();
+        Fork fork = tablePart.getSeat(tablePart.getSeats().size() - 1).getRightFork();
         synchronized (fork.getMonitor()) {
             fork.setAvailable(true);
             fork.getMonitor().notifyAll();
