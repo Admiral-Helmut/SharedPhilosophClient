@@ -113,7 +113,7 @@ public class Seat {
                 while(rerun){
                     philosopher = waitingPhilosophers.peek();
                     rerun = false;
-                    if(philosopher.isExit()){
+                    if(philosopher != null && philosopher.isExit()){
                         waitingPhilosophers.remove();
                         rerun = true;
                     }
