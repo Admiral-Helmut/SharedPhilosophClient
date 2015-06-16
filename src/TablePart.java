@@ -87,7 +87,8 @@ public class TablePart {
         }
         Seat firstSeat = seats.get(0);
         firstSeat.setLeftFork(fork);
-        fork.setRightSeat(firstSeat);
+        if(fork != null)
+            fork.setRightSeat(firstSeat);
         seats.addAll(0, newSeats);
         Philosopher philosopher = firstSeat.getPhilosopher();
         if(philosopher != null){
