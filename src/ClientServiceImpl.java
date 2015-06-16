@@ -355,7 +355,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         }
         try {
             synchronized (getMonitor()) {
-                if (getLastUpdate() + 500 < System.currentTimeMillis()) {
+                if (getLastUpdate() + 200 < System.currentTimeMillis()) {
                     rightNeighbor.updatePhilosophers(philosophersUpdate);
                 }
             }
@@ -388,6 +388,15 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     public static boolean awakePhilosopherAddToQueueCall(int philosopherId, int seatNumber, String name, int mealsEaten) {
+        while (getLastUpdate() + 200 > System.currentTimeMillis()){
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
         if(restoringActive){
             return false;
         }
@@ -423,6 +432,11 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     public static void updateAverageCall() {
+        synchronized (getMonitor()) {
+            if (getLastUpdate() + 200 > System.currentTimeMillis()) {
+                return;
+            }
+        }
         if(restoringActive || RestoreClient.getLeftneighbourLookupName().equals(Main.lookupName)){
             long sum = 0;
             int count = 0;
@@ -484,7 +498,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     public static SeatProposal getBestExternalProposal(Philosopher callingPhilosopher) {
         SeatProposal bestSeatProposal = null;
-        if(getLastUpdate() + 500 > System.currentTimeMillis()) {
+        if(getLastUpdate() + 200 > System.currentTimeMillis()) {
             return null;
         }
         try{
