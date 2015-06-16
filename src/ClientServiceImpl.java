@@ -111,8 +111,12 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     @Override
     public void updatePhilosophers(HashMap<Integer, Integer> philsophersUpdate) throws RemoteException {
-        for(Map.Entry<Integer, Integer> philosopher : philsophersUpdate.entrySet()){
-            philosophers.get(philosopher.getKey() - 1).setMealsEaten(philosopher.getValue());
+        synchronized (getMonitor()) {
+            if (getLastUpdate() + 200 < System.currentTimeMillis()) {
+                for(Map.Entry<Integer, Integer> philosopher : philsophersUpdate.entrySet()){
+                    philosophers.get(philosopher.getKey() - 1).setMealsEaten(philosopher.getValue());
+                }
+            }
         }
     }
 
@@ -274,10 +278,14 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
 
     @Override
     public void notifySetProposal(SeatProposal seatProposal, int philosopherID) throws RemoteException {
-        Philosopher philosopher = philosophers.get(philosopherID - 1);
-        philosopher.setPushedSeatProposal(seatProposal);
-        synchronized (philosopher.getSeatProposalMonitor()){
-            philosopher.getSeatProposalMonitor().notify();
+        synchronized (getMonitor()) {
+            if (getLastUpdate() + 200 < System.currentTimeMillis()) {
+                Philosopher philosopher = philosophers.get(philosopherID - 1);
+                philosopher.setPushedSeatProposal(seatProposal);
+                synchronized (philosopher.getSeatProposalMonitor()){
+                    philosopher.getSeatProposalMonitor().notify();
+                };
+            }
         }
     }
 
@@ -526,6 +534,14 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
                     if(callingPhilosopher.isExit()){
                         return null;
                     }
+
+                    synchronized (getMonitor()) {
+                        if (getLastUpdate() + 1200 > System.currentTimeMillis()) {
+                            return null;
+                        }
+                    }
+
+
                     if(System.currentTimeMillis() - startTime > 900){
                         if(debug)
                             System.out.println("Restoring started due to timeout when waiting for seat");
