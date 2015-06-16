@@ -518,6 +518,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         try{
             for(Map.Entry<String, ClientRemote> entry : neighbourList.entrySet()){
                 if(!entry.getKey().equals(Main.lookupName)){
+                    int oldSize = philosophers.size();
                     SeatProposal currentSeatProposal = null;
                     new Thread(new Runnable() {
                         @Override
@@ -542,7 +543,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
                     }
 
                     synchronized (getMonitor()) {
-                        if (getLastUpdate() + 1500 > System.currentTimeMillis()) {
+                        if (getLastUpdate() + 1500 > System.currentTimeMillis() || oldSize != philosophers.size()) {
                             return null;
                         }
                     }
