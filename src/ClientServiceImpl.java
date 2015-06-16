@@ -102,10 +102,10 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
         overseer.start();
     }
 
-    public void searchSeat(String lookupName, int callingPhilosopherID) throws RemoteException {
+    public void searchSeat(String lookupName, int callingPhilosopherID, int allPhilosophersAmount) throws RemoteException {
         SeatProposal seatProposal = TablePart.getTablePart().getBestProposalForCurrentTable();
         if(neighbourList.get(lookupName) != null){
-            neighbourList.get(lookupName).notifySetProposal(seatProposal, callingPhilosopherID);
+            neighbourList.get(lookupName).notifySetProposal(seatProposal, callingPhilosopherID, allPhilosophersAmount);
         }
     }
 
@@ -275,8 +275,8 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
     }
 
     @Override
-    public void notifySetProposal(SeatProposal seatProposal, int philosopherID) throws RemoteException {
-        if (getLastUpdate() + 500 < System.currentTimeMillis()) {
+    public void notifySetProposal(SeatProposal seatProposal, int philosopherID, int allPhilosophersAmount) throws RemoteException {
+        if (getLastUpdate() + 500 < System.currentTimeMillis() && allPhilosophersAmount == philosophers.size()) {
             Philosopher philosopher = philosophers.get(philosopherID - 1);
             philosopher.setPushedSeatProposal(seatProposal);
             synchronized (philosopher.getSeatProposalMonitor()){
@@ -513,7 +513,7 @@ public class ClientServiceImpl extends UnicastRemoteObject implements ClientRemo
                         @Override
                         public void run() {
                             try {
-                                entry.getValue().searchSeat(Main.lookupName, callingPhilosopher.getIdent());
+                                entry.getValue().searchSeat(Main.lookupName, callingPhilosopher.getIdent(), philosophers.size());
                             } catch (RemoteException e) {
                                 //e.printStackTrace();
                             }
